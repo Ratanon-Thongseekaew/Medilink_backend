@@ -9,6 +9,121 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  user_id      Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  name         String
+  phone        String?
+  address      String?
+  profileImg   String?
+  age          Int
+  height       Int
+  weight       Int
+  role         Role          @default(USER)
+  appointments Appointment[]
+  orders       Order[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Doctor {
+  doctor_id    Int           @id @default(autoincrement())
+  name         String
+  specialty    Specialty     @relation(fields: [specialty_id], references: [specialty_id])
+  specialty_id Int
+  hospital     Hospital      @relation(fields: [hospital_id], references: [hospital_id])
+  hospital_id  Int
+  availability String
+  experience   String
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  profileImg   String?
+}
+
+model Specialty {
+  specialty_id   Int      @id @default(autoincrement())
+  specialty_name String
+  doctors        Doctor[]
+}
+
+model Hospital {
+  hospital_id  Int      @id @default(autoincrement())
+  name         String
+  contact_info String?
+  location     Location @relation(fields: [location_id], references: [location_id])
+  location_id  Int
+  doctors      Doctor[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  profileImg   String?
+}
+
+model Location {
+  location_id Int       @id @default(autoincrement())
+  latitude    Float
+  longitude   Float
+  address     String
+  hospital    Hospital[]
+}
+
+model Appointment {
+  appointment_id   Int      @id @default(autoincrement())
+  user             User     @relation(fields: [user_id], references: [user_id])
+  user_id          Int
+  doctor           Doctor   @relation(fields: [doctor_id], references: [doctor_id])
+  doctor_id        Int
+  appointment_date DateTime
+  status           String
+  payment          Payment? @relation(fields: [payment_id], references: [payment_id])
+  payment_id       Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Program {
+  program_id  Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  profileImg  String?
+}
+
+model Order {
+  order_id   Int      @id @default(autoincrement())
+  user       User     @relation(fields: [user_id], references: [user_id])
+  user_id    Int
+  program    Program  @relation(fields: [program_id], references: [program_id])
+  program_id Int
+  order_date DateTime @default(now())
+  payment    Payment? @relation(fields: [payment_id], references: [payment_id])
+  payment_id Int?
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Payment {
+  payment_id   Int          @id @default(autoincrement())
+  amount       Float
+  payment_date DateTime     @default(now())
+  status       String
+  method       String
+  appointment  Appointment[]
+  order        Order[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
