@@ -26,9 +26,6 @@ model User {
   phone        String?
   address      String?
   profileImg   String?
-  age          Int
-  height       Int
-  weight       Int
   role         Role          @default(USER)
   appointments Appointment[]
   orders       Order[]
