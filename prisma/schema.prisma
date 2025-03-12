@@ -22,7 +22,8 @@ model User {
   user_id      Int           @id @default(autoincrement())
   email        String        @unique
   password     String
-  name         String
+  firstname         String
+  lastname String
   phone        String?
   address      String?
   profileImg   String?
@@ -35,7 +36,8 @@ model User {
 
 model Doctor {
   doctor_id    Int           @id @default(autoincrement())
-  name         String
+  firstname         String
+  lastname    String
   specialty    Specialty     @relation(fields: [specialty_id], references: [specialty_id])
   specialty_id Int
   hospital     Hospital      @relation(fields: [hospital_id], references: [hospital_id])
@@ -67,7 +69,7 @@ model Hospital {
 }
 
 model Location {
-  location_id Int       @id @default(autoincrement())
+  location_id Int        @id @default(autoincrement())
   latitude    Float
   longitude   Float
   address     String
@@ -114,13 +116,13 @@ model Order {
 }
 
 model Payment {
-  payment_id   Int          @id @default(autoincrement())
+  payment_id   Int           @id @default(autoincrement())
   amount       Float
-  payment_date DateTime     @default(now())
+  payment_date DateTime      @default(now())
   status       String
   method       String
   appointment  Appointment[]
   order        Order[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
