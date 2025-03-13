@@ -18,12 +18,28 @@ enum Role {
   ADMIN
 }
 
+enum Day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum Status {
+  PENDING
+  SUCCESS
+  CANCELLED
+}
+
 model User {
   user_id      Int           @id @default(autoincrement())
   email        String        @unique
   password     String
-  firstname         String
-  lastname String
+  firstname    String
+  lastname     String
   phone        String?
   address      String?
   profileImg   String?
@@ -35,19 +51,22 @@ model User {
 }
 
 model Doctor {
-  doctor_id    Int           @id @default(autoincrement())
-  firstname         String
-  lastname    String
-  specialty    Specialty     @relation(fields: [specialty_id], references: [specialty_id])
-  specialty_id Int
-  hospital     Hospital      @relation(fields: [hospital_id], references: [hospital_id])
-  hospital_id  Int
-  availability String
-  experience   String
-  appointments Appointment[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  profileImg   String?
+  id              Int              @id @default(autoincrement())
+  firstname       String
+  lastname        String
+  specialty       Specialty        @relation(fields: [specialty_id], references: [specialty_id])
+  specialty_id    Int
+  hospital        Hospital         @relation(fields: [hospital_id], references: [hospital_id])
+  hospital_id     Int
+  availability    String
+  experience      String
+  appointments    Appointment[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  profileImg      String?
+  doctorSchedules DoctorSchedule[]
+  doctorOvertime  DoctorOvertime[]
+  doctorLeave     DoctorLeave[]
 }
 
 model Specialty {
@@ -77,17 +96,22 @@ model Location {
 }
 
 model Appointment {
-  appointment_id   Int      @id @default(autoincrement())
-  user             User     @relation(fields: [user_id], references: [user_id])
+  appointment_id   Int             @id @default(autoincrement())
+  user             User            @relation(fields: [user_id], references: [user_id])
   user_id          Int
-  doctor           Doctor   @relation(fields: [doctor_id], references: [doctor_id])
+  doctor           Doctor          @relation(fields: [doctor_id], references: [id])
   doctor_id        Int
   appointment_date DateTime
-  status           String
-  payment          Payment? @relation(fields: [payment_id], references: [payment_id])
+  status           Status          @default(PENDING)
+  payment          Payment?        @relation(fields: [payment_id], references: [payment_id])
   payment_id       Int?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  note             String?
+  DoctorSchedule   DoctorSchedule? @relation(fields: [doctorScheduleId], references: [id])
+  doctorScheduleId Int?
+  DoctorOvertime   DoctorOvertime? @relation(fields: [doctorOvertimeId], references: [id])
+  doctorOvertimeId Int?
 }
 
 model Program {
@@ -125,4 +149,43 @@ model Payment {
   order        Order[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+}
+
+model Time {
+  id             Int              @id @default(autoincrement())
+  startTime      DateTime         @db.Time()
+  endTime        DateTime         @db.Time()
+  schedules      DoctorSchedule[]
+  DoctorOvertime DoctorOvertime[]
+  DoctorLeave    DoctorLeave[]
+}
+
+model DoctorSchedule {
+  id          Int           @id @default(autoincrement())
+  day         Day
+  doctorId    Int?
+  doctor      Doctor?       @relation(fields: [doctorId], references: [id])
+  Time        Time?         @relation(fields: [timeId], references: [id])
+  timeId      Int?
+  appointment Appointment[]
+}
+
+model DoctorOvertime {
+  id          Int           @id @default(autoincrement())
+  date        DateTime      @db.Date()
+  doctorId    Int?
+  doctor      Doctor?       @relation(fields: [doctorId], references: [id])
+  Time        Time?         @relation(fields: [timeId], references: [id])
+  timeId      Int?
+  appointment Appointment[]
+}
+
+model DoctorLeave {
+  id       Int      @id @default(autoincrement())
+  date     DateTime @db.Date()
+  doctorId Int?
+  doctor   Doctor?  @relation(fields: [doctorId], references: [id])
+  Time     Time?    @relation(fields: [timeId], references: [id])
+  timeId   Int?
+  reason   String
 }
