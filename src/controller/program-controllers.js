@@ -40,8 +40,38 @@ try {
 
 
 exports.UserGetProgramDetail = async(req,res,next)=>{
+const {program_id:id} = req.params
+try {
+    if(!id){
+        return createError(400, "Program ID Must be provided")
+    }
+    if(isNaN(Number(id))){
+        return createError(400, "Invalid ID")
+    }
+    const userGetProgram = await prisma.program.findFirst({
+        where:{
+            id: Number(id)
+        },
+        select:{
+            program_id:true,
+            name:true,
+            description:true,
+            price:true,
+            createdAt:true,
+            profileImg:true
+        }
+    })
+    res.json({userGetProgram :userGetProgram })
+} catch (error) {
+    next(error)
+}
+}
 
-
-
+exports.adminCreateProgram = async (req,res,next)=>{
+try {
+    const {name,description,price,profileImg} = req.body
+} catch (error) {
+    next(error)
+}
 
 }
