@@ -6,6 +6,7 @@ exports.registerSchema = z
     email: z.string().email("Email ไม่ถูกต้อง"),
     firstname: z.string().min(3, "Firstname ต้องมากกว่า 3 "),
     lastname: z.string().min(3, "Lastname ต้องมากกว่า 3 "),
+    phone : z.string().max(10, "Phone ต้องน้อยกว่าหรือเท่ากับ 10"),
     password: z.string().min(4, "Password ต้องมากกว่า 4"),
     confirmpassword: z.string().min(4, "Confirm Password ต้องมากกว่า 4"),
   })

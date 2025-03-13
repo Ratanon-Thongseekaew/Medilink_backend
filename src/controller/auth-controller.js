@@ -7,7 +7,7 @@ exports.register =async(req,res,next)=>{
     
   try {
       //1.req.body
-      const {email,firstname,lastname,password,confirmpassword} =req.body
+      const {email,firstname,phone,lastname,password,confirmpassword} =req.body
       //2.validators
       // 3.Check email alredy exist
       const checkEmail = await prisma.user.findFirst({
@@ -28,6 +28,7 @@ exports.register =async(req,res,next)=>{
               email: email,
               firstname: firstname,
               lastname : lastname,
+              phone: phone,
               password: hashedPassword,
           }
       })
