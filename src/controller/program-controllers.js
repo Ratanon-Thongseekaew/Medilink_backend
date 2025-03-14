@@ -2,8 +2,10 @@ const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
 const cloudinary = require("../configs/cloudinary")
 const fs = require("fs")
-const path = require("path")
+const path = require("path");
+const { connect } = require("http2");
 
+//done
 exports.userGetAllPrograms = async (req,res,next)=>{
 try {
     const {page = "1", limit = "25"}= req.query;
@@ -38,9 +40,9 @@ try {
 
 }
 
-
+//done
 exports.UserGetProgramDetail = async(req,res,next)=>{
-const {program_id:id} = req.params
+const {id} = req.params
 try {
     if(!id){
         return createError(400, "Program ID Must be provided")
@@ -50,7 +52,7 @@ try {
     }
     const userGetProgram = await prisma.program.findFirst({
         where:{
-            id: Number(id)
+            program_id: Number(id)
         },
         select:{
             program_id:true,
@@ -61,17 +63,61 @@ try {
             profileImg:true
         }
     })
+    if (!userGetProgram) {
+        return next(createError(404, "Program not found"));
+      }
     res.json({userGetProgram :userGetProgram })
 } catch (error) {
     next(error)
 }
 }
-
+// done 
 exports.adminCreateProgram = async (req,res,next)=>{
 try {
     const {name,description,price,profileImg} = req.body
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized. Please log in." });
+    }
+    if(!req.user || req.user.role !== "ADMIN"){
+        return createError(403,"Unauthorized")
+    }
+    //upload รูปภาพ
+    let imageUrl = "";
+    if(req.file){
+        const uploadResponse = await cloudinary.uploader.upload(req.file.path,{
+            folder: "mediLink_program",
+        });
+        imageUrl = uploadResponse.secure_url;
+    }
+    const newProgram = await prisma.program.create({
+        data:{
+            name:name,
+            description:description,
+            price:price,
+            profileImg:imageUrl,
+        },
+    })
+    res.json({
+        message: "Create New Program Successfully",
+        program:newProgram});
 } catch (error) {
     next(error)
 }
+}
+
+
+exports.adminUpdateProgram = async (req,res,next)=>{
+try {
+    
+} catch (error) {
+    
+}
+
 
 }
+
+exports.adminDeleteProgram = async (req,res,next) =>{
+    
+}
+
+

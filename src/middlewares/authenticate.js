@@ -1,4 +1,5 @@
 const createError = require("../utils/createError")
+require("dotenv").config();
 const jwt = require("jsonwebtoken")
 
 exports.authenticate = (req,res,next)=>{
@@ -8,7 +9,7 @@ exports.authenticate = (req,res,next)=>{
         // console.log(authorization)
 
         if(!authorization){
-            return createError(401, "Missing Token")
+            return res.status(401).json({ message: "Missing Token"});
         }
         
         const token = authorization.split(" ")[1]
@@ -17,7 +18,7 @@ exports.authenticate = (req,res,next)=>{
         jwt.verify(token, process.env.SECRET,(err,decode)=>{
             console.log(decode)
             if(err){
-                return createError(401, "Unauthorized")
+                return res.status(401).json({ message: "Unauthorized" });
             }
             // console.log(decode)
             //สร้าง property user ให้เท่ากับ decode (ข้อมูล user จาก Token)
