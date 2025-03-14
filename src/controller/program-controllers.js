@@ -16,7 +16,7 @@ try {
     
     const getPrograms =  await prisma.program.findMany({
         select:{
-            program_id: true,
+            id: true,
             name:true,
             description:true,
             price:true,
@@ -52,10 +52,10 @@ try {
     }
     const userGetProgram = await prisma.program.findFirst({
         where:{
-            program_id: Number(id)
+           id: Number(id)
         },
         select:{
-            program_id:true,
+            id:true,
             name:true,
             description:true,
             price:true,
@@ -116,8 +116,8 @@ try {
 
 }
 
-exports.adminDeleteProgram = async (req,res,next) =>{
-    
-}
+// exports.adminDeleteProgram = async (req,res,next) =>{
+
+// }
 
 

@@ -7,7 +7,7 @@ const permission = require('../middlewares/permission')
 const userRouter = express.Router()
 
 
-userRouter.post('/',authenticate,permission,upload.single('profileImg'),userController.adminCreateUsers)
+userRouter.post('/test',authenticate,permission,upload.single('profileImg'),userController.adminCreateUsers)
 userRouter.get('/',authenticate,permission,userController.adminGetUsers)
 userRouter.delete('/:id',authenticate,permission,userController.adminDeleteUsers)
 userRouter.patch('/:id',authenticate,permission,upload.single('profileImg'),userController.adminUpdateUsers)
