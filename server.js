@@ -37,5 +37,5 @@ app.use("/api/user", userRouter);
 app.use(handleError);
 
 // Start Server
-const PORT = 8888;
+const PORT = 8889;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
