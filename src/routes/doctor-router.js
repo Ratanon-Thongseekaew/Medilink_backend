@@ -4,13 +4,15 @@ const doctorRouter = express.Router();
 //middleware
 const { authenticate } = require("../middlewares/authenticate");
 const {
-  getDoctordatas,
   getDoctordatasbySpecialty,
+  getDoctorDataById,
+  getAllDoctordatas,
 } = require("../controller/doctor-controller");
 
 //auth-route
-doctorRouter.get("/get-doctor-datas", getDoctordatas);
+doctorRouter.get("/get-all-doctor-datas", getAllDoctordatas);
 doctorRouter.get("/get-doctor-datas-by-specialty", getDoctordatasbySpecialty);
+doctorRouter.get("/get-doctor-data-by-id/:doctorId", getDoctorDataById);
 
 module.exports = doctorRouter;
 

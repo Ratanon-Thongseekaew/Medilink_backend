@@ -1,9 +1,13 @@
 const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
 
-module.exports.getDoctordatas = async (req, res, next) => {
+module.exports.getAllDoctordatas = async (req, res, next) => {
   try {
-    const doctorDatas = await prisma.doctor.findMany();
+    const doctorDatas = await prisma.doctor.findMany({
+      include: {
+        specialty: true,
+      },
+    });
 
     res.json({ doctorDatas });
   } catch (error) {
@@ -26,6 +30,25 @@ module.exports.getDoctordatasbySpecialty = async (req, res, next) => {
     });
 
     res.json({ doctordatasbySpecialty });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports.getDoctorDataById = async (req, res, next) => {
+  try {
+    const { doctorId } = req.params;
+
+    const doctorDataById = await prisma.doctor.findUnique({
+      where: {
+        id: Number(doctorId),
+      },
+      include: {
+        specialty: true,
+      },
+    });
+
+    res.json(doctorDataById);
   } catch (error) {
     next(error);
   }
