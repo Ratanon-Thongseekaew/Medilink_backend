@@ -35,7 +35,7 @@ enum Status {
 }
 
 model User {
-  user_id      Int           @id @default(autoincrement())
+  id      Int           @id @default(autoincrement())
   email        String        @unique
   password     String
   firstname    String
@@ -46,7 +46,7 @@ model User {
   role         Role          @default(USER)
   appointments Appointment[]
   orders       Order[]
-  createdAt    DateTime      @default(now())
+  createdAt    DateTime      @default(now()) @db.Timestamp(0)
   updatedAt    DateTime      @updatedAt
 }
 
@@ -54,14 +54,13 @@ model Doctor {
   id              Int              @id @default(autoincrement())
   firstname       String
   lastname        String
-  specialty       Specialty        @relation(fields: [specialty_id], references: [specialty_id])
-  specialty_id    Int
-  hospital        Hospital         @relation(fields: [hospital_id], references: [hospital_id])
-  hospital_id     Int
-  availability    String
+  specialty       Specialty        @relation(fields: [specialtyId], references: [id])
+  specialtyId    Int
+  hospital        Hospital         @relation(fields: [hospitalId], references: [id])
+  hospitalId    Int
   experience      String
   appointments    Appointment[]
-  createdAt       DateTime         @default(now())
+  createdAt       DateTime         @default(now()) @db.Timestamp(0)
   updatedAt       DateTime         @updatedAt
   profileImg      String?
   doctorSchedules DoctorSchedule[]
@@ -70,25 +69,25 @@ model Doctor {
 }
 
 model Specialty {
-  specialty_id   Int      @id @default(autoincrement())
-  specialty_name String
+  id   Int      @id @default(autoincrement())
+  specialtyName String
   doctors        Doctor[]
 }
 
 model Hospital {
-  hospital_id  Int      @id @default(autoincrement())
+  id  Int      @id @default(autoincrement())
   name         String
-  contact_info String?
-  location     Location @relation(fields: [location_id], references: [location_id])
-  location_id  Int
+  contactInfo String?
+  location     Location @relation(fields: [locationId], references: [id])
+  locationId Int
   doctors      Doctor[]
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now()) @db.Timestamp(0)
   updatedAt    DateTime @updatedAt
   profileImg   String?
 }
 
 model Location {
-  location_id Int        @id @default(autoincrement())
+  id Int        @id @default(autoincrement())
   latitude    Float
   longitude   Float
   address     String
@@ -96,16 +95,16 @@ model Location {
 }
 
 model Appointment {
-  appointment_id   Int             @id @default(autoincrement())
-  user             User            @relation(fields: [user_id], references: [user_id])
-  user_id          Int
-  doctor           Doctor          @relation(fields: [doctor_id], references: [id])
-  doctor_id        Int
-  appointment_date DateTime
+  id   Int             @id @default(autoincrement())
+  user             User            @relation(fields: [userId], references: [id])
+  userId          Int
+  doctor           Doctor          @relation(fields: [doctorId], references: [id])
+  doctorId        Int
+  appointmentDate DateTime
   status           Status          @default(PENDING)
-  payment          Payment?        @relation(fields: [payment_id], references: [payment_id])
-  payment_id       Int?
-  createdAt        DateTime        @default(now())
+  payment          Payment?        @relation(fields: [paymentId], references: [id])
+  paymentId       Int?
+  createdAt        DateTime         @default(now()) @db.Timestamp(0)
   updatedAt        DateTime        @updatedAt
   note             String?
   DoctorSchedule   DoctorSchedule? @relation(fields: [doctorScheduleId], references: [id])
@@ -115,39 +114,39 @@ model Appointment {
 }
 
 model Program {
-  program_id  Int      @id @default(autoincrement())
+  id  Int      @id @default(autoincrement())
   name        String
   description String
   price       Float
   orders      Order[]
-  createdAt   DateTime @default(now())
+  createdAt   DateTime @default(now()) @db.Timestamp(0)
   updatedAt   DateTime @updatedAt
   profileImg  String?
 }
 
 model Order {
-  order_id   Int      @id @default(autoincrement())
-  user       User     @relation(fields: [user_id], references: [user_id])
-  user_id    Int
-  program    Program  @relation(fields: [program_id], references: [program_id])
-  program_id Int
-  order_date DateTime @default(now())
-  payment    Payment? @relation(fields: [payment_id], references: [payment_id])
-  payment_id Int?
+  id   Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId   Int
+  program    Program  @relation(fields: [programId], references: [id])
+  programId Int
+  orderDate DateTime @default(now())
+  payment    Payment? @relation(fields: [paymentId], references: [id])
+  paymentId Int?
   status     String
-  createdAt  DateTime @default(now())
+  createdAt  DateTime  @default(now()) @db.Timestamp(0)
   updatedAt  DateTime @updatedAt
 }
 
 model Payment {
-  payment_id   Int           @id @default(autoincrement())
+  id   Int           @id @default(autoincrement())
   amount       Float
-  payment_date DateTime      @default(now())
+  paymentDate DateTime      @default(now())
   status       String
   method       String
   appointment  Appointment[]
   order        Order[]
-  createdAt    DateTime      @default(now())
+  createdAt    DateTime       @default(now()) @db.Timestamp(0)
   updatedAt    DateTime      @updatedAt
 }
 
