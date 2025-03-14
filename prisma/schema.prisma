@@ -22,8 +22,8 @@ model User {
   user_id      Int           @id @default(autoincrement())
   email        String        @unique
   password     String
-  firstname         String
-  lastname String
+  firstname    String
+  lastname     String
   phone        String?
   address      String?
   profileImg   String?
@@ -36,8 +36,8 @@ model User {
 
 model Doctor {
   doctor_id    Int           @id @default(autoincrement())
-  firstname         String
-  lastname    String
+  firstname    String
+  lastname     String
   specialty    Specialty     @relation(fields: [specialty_id], references: [specialty_id])
   specialty_id Int
   hospital     Hospital      @relation(fields: [hospital_id], references: [hospital_id])
