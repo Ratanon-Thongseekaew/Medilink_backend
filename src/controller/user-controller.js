@@ -238,3 +238,46 @@ module.exports.adminUpdateUsers = async (req, res, next) => {
 
 
 }
+
+
+
+
+module.exports.adminGetUserById = async (req, res, next) => {
+
+
+    try {
+
+        const { id } = req.params
+
+        if (!id) {
+
+            createError(400, "Require id parameter")
+
+        }
+
+
+        const user = await prisma.user.findUnique({
+
+
+            where: { user_id: +id }
+
+
+        })
+
+
+        if (!user) {
+
+            createError(404, "User not found")
+
+        }
+
+        res.status(200).json({ message: "Success", user })
+
+    } catch (error) {
+        next(error)
+    }
+
+
+
+
+}
