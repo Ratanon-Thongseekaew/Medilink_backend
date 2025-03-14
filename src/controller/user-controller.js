@@ -259,7 +259,7 @@ module.exports.adminGetUserById = async (req, res, next) => {
         const user = await prisma.user.findUnique({
 
 
-            where: { user_id: +id }
+            where: { id: +id }
 
 
         })
