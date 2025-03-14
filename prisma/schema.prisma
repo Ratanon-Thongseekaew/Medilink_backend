@@ -152,8 +152,8 @@ model Payment {
 
 model Time {
   id             Int              @id @default(autoincrement())
-  startTime      DateTime         @db.Time()
-  endTime        DateTime         @db.Time()
+  startTime      DateTime        
+  endTime        DateTime       
   schedules      DoctorSchedule[]
   DoctorOvertime DoctorOvertime[]
   DoctorLeave    DoctorLeave[]
