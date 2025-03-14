@@ -1,15 +1,12 @@
-
-
-const express = require("express")
-const cors = require("cors")
-const morgan = require("morgan")
 require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
 
 // Routing
-const authRouter = require("./src/routes/auth-router")
-const programRouter = require("./src/routes/program-router")
+const authRouter = require("./src/routes/auth-router");
+const programRouter = require("./src/routes/program-router");
 const userRouter = require("./src/routes/user-router");
-
 
 const app = express();
 
@@ -22,9 +19,8 @@ const appointmentRouter = require("./src/routes/appointment-router");
 const scheduleRouter = require("./src/routes/schedule-router");
 const doctorRouter = require("./src/routes/doctor-router");
 
-
 // // Routing
-app.use("/api/program",programRouter)
+app.use("/api/program", programRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/appointment", appointmentRouter);
 app.use("/api/schedule", scheduleRouter);

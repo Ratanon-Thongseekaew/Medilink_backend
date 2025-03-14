@@ -10,11 +10,7 @@ const doctorData = [
     lastname: "Doe",
     specialtyId: 1,
     hospitalId: 1,
-<<<<<<< HEAD
-    experience: 10,
-=======
     experience: "10 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/john_doe.jpg",
   },
   {
@@ -22,11 +18,7 @@ const doctorData = [
     lastname: "Smith",
     specialtyId: 2,
     hospitalId: 2,
-<<<<<<< HEAD
-    experience: 8,
-=======
     experience: "8 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/jane_smith.jpg",
   },
   {
@@ -34,11 +26,7 @@ const doctorData = [
     lastname: "Brown",
     specialtyId: 3,
     hospitalId: 1,
-<<<<<<< HEAD
-    experience: 12,
-=======
     experience: "12 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/michael_brown.jpg",
   },
   {
@@ -46,11 +34,7 @@ const doctorData = [
     lastname: "Johnson",
     specialtyId: 4,
     hospitalId: 3,
-<<<<<<< HEAD
-    experience: 5,
-=======
     experience: "5 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/emily_johnson.jpg",
   },
   {
@@ -58,11 +42,7 @@ const doctorData = [
     lastname: "Williams",
     specialtyId: 1,
     hospitalId: 2,
-<<<<<<< HEAD
-    experience: 15,
-=======
     experience: "15 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/david_williams.jpg",
   },
   {
@@ -70,11 +50,7 @@ const doctorData = [
     lastname: "Miller",
     specialtyId: 2,
     hospitalId: 3,
-<<<<<<< HEAD
-    experience: 7,
-=======
     experience: "7 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/sophia_miller.jpg",
   },
   {
@@ -82,11 +58,7 @@ const doctorData = [
     lastname: "Taylor",
     specialtyId: 3,
     hospitalId: 1,
-<<<<<<< HEAD
-    experience: 10,
-=======
     experience: "10 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/daniel_taylor.jpg",
   },
   {
@@ -94,11 +66,7 @@ const doctorData = [
     lastname: "Anderson",
     specialtyId: 4,
     hospitalId: 2,
-<<<<<<< HEAD
-    experience: 9,
-=======
     experience: "9 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/olivia_anderson.jpg",
   },
   {
@@ -106,11 +74,7 @@ const doctorData = [
     lastname: "Thomas",
     specialtyId: 1,
     hospitalId: 3,
-<<<<<<< HEAD
-    experience: 11,
-=======
     experience: "11 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/james_thomas.jpg",
   },
   {
@@ -118,28 +82,12 @@ const doctorData = [
     lastname: "Moore",
     specialtyId: 2,
     hospitalId: 1,
-<<<<<<< HEAD
-    experience: 6,
-=======
     experience: "6 Years",
->>>>>>> dev
     profileImg: "https://example.com/images/isabella_moore.jpg",
   },
 ];
 
 const specialtyData = [
-<<<<<<< HEAD
-  { specialtyId: 1, specialtyName: "Cardiology" },
-  { specialtyId: 2, specialtyName: "Neurology" },
-  { specialtyId: 3, specialtyName: "Orthopedics" },
-  { specialtyId: 4, specialtyName: "Pediatrics" },
-  { specialtyId: 5, specialtyName: "Dermatology" },
-  { specialtyId: 6, specialtyName: "Gynecology" },
-  { specialtyId: 7, specialtyName: "Ophthalmology" },
-  { specialtyId: 8, specialtyName: "Oncology" },
-  { specialtyId: 9, specialtyName: "Gastroenterology" },
-  { specialtyId: 10, specialtyName: "Endocrinology" },
-=======
   { specialtyName: "Cardiology" },
   { specialtyName: "Neurology" },
   { specialtyName: "Orthopedics" },
@@ -150,35 +98,22 @@ const specialtyData = [
   { specialtyName: "Oncology" },
   { specialtyName: "Gastroenterology" },
   { specialtyName: "Endocrinology" },
->>>>>>> dev
 ];
 
 const hospitalData = [
   {
-<<<<<<< HEAD
-    hospitalId: 1,
-=======
->>>>>>> dev
     name: "City Hospital",
     contactInfo: "123-456-7890",
     locationId: 1,
     profileImg: "https://example.com/images/city_hospital.jpg",
   },
   {
-<<<<<<< HEAD
-    hospitalId: 2,
-=======
->>>>>>> dev
     name: "Metro Medical Center",
     contactInfo: "987-654-3210",
     locationId: 2,
     profileImg: "https://example.com/images/metro_medical.jpg",
   },
   {
-<<<<<<< HEAD
-    hospitalId: 3,
-=======
->>>>>>> dev
     name: "Green Valley Clinic",
     contactInfo: "555-666-7777",
     locationId: 3,
@@ -188,28 +123,16 @@ const hospitalData = [
 
 const locationData = [
   {
-<<<<<<< HEAD
-    locationId: 1,
-=======
->>>>>>> dev
     latitude: 40.7128,
     longitude: -74.006,
     address: "123 Main St, New York, NY",
   },
   {
-<<<<<<< HEAD
-    locationId: 2,
-=======
->>>>>>> dev
     latitude: 34.0522,
     longitude: -118.2437,
     address: "456 Elm St, Los Angeles, CA",
   },
   {
-<<<<<<< HEAD
-    locationId: 3,
-=======
->>>>>>> dev
     latitude: 41.8781,
     longitude: -87.6298,
     address: "789 Pine St, Chicago, IL",
@@ -344,52 +267,16 @@ const timeData = [
 console.log("DB seed...");
 
 async function run() {
-<<<<<<< HEAD
-  await prisma.doctor.createMany({ data: doctorData });
-}
-
-async function run() {
-=======
-  await prisma.specialty.createMany({ data: specialtyData });
-}
-
-async function run() {
-  await prisma.location.createMany({ data: locationData });
-}
-async function run() {
->>>>>>> dev
   await prisma.time.createMany({ data: timeData });
-}
-
-async function run() {
-<<<<<<< HEAD
   await prisma.specialty.createMany({ data: specialtyData });
-}
-
-async function run() {
-=======
->>>>>>> dev
-  await prisma.hospital.createMany({ data: hospitalData });
-}
-
-async function run() {
-<<<<<<< HEAD
   await prisma.location.createMany({ data: locationData });
-}
-
-=======
+  await prisma.hospital.createMany({ data: hospitalData });
   await prisma.doctor.createMany({ data: doctorData });
-}
->>>>>>> dev
-async function run() {
   await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
 }
 
 run();
-<<<<<<< HEAD
-=======
 
 // ลำดับการ seed
 // 1. location 2. specialty 3. time 4. hospital 5 doctor 6. doctor schedule
 // command "npx prisma db seed"
->>>>>>> dev
