@@ -136,11 +136,11 @@ module.exports.adminDeleteUsers = async (req, res, next) => {
         }
 
         const userData = await prisma.user.findUnique({
-            where: { user_id: +id }
+            where: { id: +id }
         })
 
 
-        const result = await prisma.user.delete({ where: { user_id: +id } })
+        const result = await prisma.user.delete({ where: { id: +id } })
 
 
         res.json({ message: `Delete user id=${id} done`, deletePost: userData })
@@ -180,7 +180,7 @@ module.exports.adminUpdateUsers = async (req, res, next) => {
 
         const { email, firstname, lastname, phone, address, role } = req.body
 
-        const userData = await prisma.user.findUnique({ where: { user_id: +id } })
+        const userData = await prisma.user.findUnique({ where: { id: +id } })
 
         if (!userData) {
 
@@ -224,7 +224,7 @@ module.exports.adminUpdateUsers = async (req, res, next) => {
 
         const result = await prisma.user.update({
 
-            where: { user_id: +id },
+            where: { id: +id },
             data
 
         })

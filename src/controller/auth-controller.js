@@ -63,7 +63,7 @@ exports.login = async(req, res, next) =>{
       }
       //3. Grnerate Token
       const payload = {
-          id: users.user_id,
+          id: users.id,
           email : users.email,
           firstname: users.firstname,
           lastname: users.lastname,
@@ -93,7 +93,7 @@ exports.getme = async(req,res,next) =>{
     console.log("checkkkk", req.user)
     const users = await prisma.user.findUnique({
         where:{
-          user_id: id,
+          id: id,
         },
        omit:{
             password:true

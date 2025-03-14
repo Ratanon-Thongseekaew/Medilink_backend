@@ -4,11 +4,14 @@ const { date } = require("zod");
 
 module.exports.userCreateAppointment = async (req, res, next) => {
   try {
-    const { id: user_id } = req.user;
+    // console.log("hi createAppointment")
+    const userId = req.user.id
+    console.log("User from middleware:sadfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf", req.user);
+    // console.log("UserId extracted:", userId);
     const {
-      doctor_id,
-      appointment_date,
-      payment_id,
+      doctorId,
+      appointmentDate,
+      paymentId,
       note,
       doctorScheduleId,
       doctorOvertimeId,
@@ -16,6 +19,9 @@ module.exports.userCreateAppointment = async (req, res, next) => {
 
     function isValidId(id, errorMeassage) {
       if (!id || isNaN(id)) return createError(errorMeassage);
+    }
+    if (!req.user) {
+      return res.status(400).json({ message: 'User is missing or not authenticated.' });
     }
 
     // isValidId(doctor_id, "no doctor id");
@@ -74,11 +80,11 @@ module.exports.userCreateAppointment = async (req, res, next) => {
     // //  *
 
     const createAppointmentDate = {
-      doctor_id,
-      payment_id,
+      doctorId,
+      paymentId,
       note,
-      appointment_date: new Date(appointment_date),
-      user_id,
+      appointmentDate: new Date(appointmentDate),
+      userId,
     };
 
     if (doctorOvertimeId) {
@@ -86,12 +92,36 @@ module.exports.userCreateAppointment = async (req, res, next) => {
     } else if (doctorScheduleId) {
       createAppointmentDate.doctorScheduleId = doctorScheduleId;
     }
-
-    const appointment = await prisma.appointment.create({
-      data: createAppointmentDate,
+    console.log("check appointment data:",{
+      userId,
+      doctorId,
+      appointmentDate,
+      paymentId,
+      doctorScheduleId,
+      doctorOvertimeId
     });
-
-    res.json({ appointment });
+    const appointment = await prisma.appointment.create({
+      data: {
+        appointmentDate: new Date(appointmentDate),
+        note: note || "",
+        user: {
+          connect: { id: Number(userId) }
+        },
+        doctor: {
+          connect: { id: Number(doctorId) }
+        },
+        payment: {
+          connect: {id: Number(paymentId)}
+        },
+        DoctorSchedule:{
+          connect:  {id: Number(doctorScheduleId)}
+        }
+        // Handle optional connections separately to avoid undefined issues
+      }
+    });
+    
+    
+    res.json({ appointment: appointment, message: "create appointment successfully" });
   } catch (error) {
     next(error);
   }
