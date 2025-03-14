@@ -16,10 +16,14 @@ app.use(morgan("dev")); // Show log terminal
 app.use(express.json()); // For read json
 const handleError = require("./src/middlewares/handleError");
 const appointmentRouter = require("./src/routes/appointment-router");
+const scheduleRouter = require("./src/routes/schedule-router");
+const doctorRouter = require("./src/routes/doctor-router");
 
 // // Routing
 app.use("/api/auth", authRouter);
 app.use("/api/appointment", appointmentRouter);
+app.use("/api/schedule", scheduleRouter);
+app.use("/api/doctor", doctorRouter);
 
 app.use("/api/user", userRouter);
 // app.use('/api',userRouter)
