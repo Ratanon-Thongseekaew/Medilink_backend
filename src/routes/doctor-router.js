@@ -7,11 +7,19 @@ const {
   getDoctordatasbySpecialty,
   getDoctorDataById,
   getAllDoctordatas,
+  getDoctordatasbyHospital,
 } = require("../controller/doctor-controller");
 
 //auth-route
 doctorRouter.get("/get-all-doctor-datas", getAllDoctordatas);
-doctorRouter.get("/get-doctor-datas-by-specialty", getDoctordatasbySpecialty);
+doctorRouter.get(
+  "/get-doctor-datas-by-specialty/:specialtyId",
+  getDoctordatasbySpecialty
+);
+doctorRouter.get(
+  "/get-doctor-datas-by-hospital/:hospitalId",
+  getDoctordatasbyHospital
+);
 doctorRouter.get("/get-doctor-data-by-id/:doctorId", getDoctorDataById);
 
 module.exports = doctorRouter;
