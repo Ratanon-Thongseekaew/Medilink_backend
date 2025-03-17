@@ -1,25 +1,28 @@
 const prisma = require('../configs/prisma')
 const createError = require('../utils/createError')
 
-
-exports.adminGetAllHospital =async(req,res,next)=>{
+//done
+exports.adminGetAllHospital = async (req, res, next) => {
     try {
-         const hospital = await prisma.hospital.findMany({})
- 
-         // console.log(doctors)
-         res.json({
-             message: "Get Hospital list",
-             data: hospital,
-         });
-     } catch (error) {
-         next(error)
-         
-     }
- } 
+      const hospitals = await prisma.hospital.findMany({
+        include: {
+          location: true // Include the related location data
+        }
+      });
+      
+      res.json({
+        message: "Get Hospital list",
+        data: hospitals,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
+  //done
 exports.adminCreateHospital = async(req,res,next)=>{
     try {
-        const {name, contact_info, location} = req.body
+        const {name, contactInfo, locationId} = req.body
 
         const checkHospital = await prisma.hospital.findFirst({
             where :{
@@ -29,17 +32,19 @@ exports.adminCreateHospital = async(req,res,next)=>{
         if(checkHospital){
             createError(400, "Hospital is already have in system")
         }
+        const profileImg = req.file ? req.file.path : null;
+
 
         const hospital = await prisma.hospital.create({
             data :{
                 name: name,
-                contact_info :contact_info,
+                contactInfo :contactInfo,
                 location: {
                     connect: {
-                        location_id: parseInt(location), // Connect to existing Location
+                        id: parseInt(locationId), // Connect to existing Location
                     },
                 },
-                // profileImg: profileImg,
+                profileImg: profileImg,
                 
             }
         })
@@ -49,26 +54,114 @@ exports.adminCreateHospital = async(req,res,next)=>{
     }
     
 }
-
-exports.adminUpdateHospital = async(req,res,next) =>{
+//done
+exports.adminGetHospital = async (req, res, next) =>{
+    const {id} = req.params
     try {
-        const {hospital_id ,contact_info } = req.body
-        //update
-       const updateHospital =  await prisma.hospital.update({
-            where : { hospital_id: hospital_id},
-            data: { 
-                contact_info:contact_info,
+        if(!id){
+            return createError(400, "Hospital ID Must be provided")
+        }
+        if(isNaN(Number(id))){
+            return createError(400, "Invalid Hospital ID")
+        }
+        const getHospital = await prisma.hospital.findFirst({
+            where:{
+                id: Number(id)
+            },
+            select:{
+                id:true,
+                name:true,
+                profileImg:true,
+                contactInfo:true,
+                location:{
+                    select:{
+                        id: true,
+                        address:true
+                    }
+                }
             }
         })
-        res.json({
-            message: " update hospital successfully",
-            data: updateHospital,
-        });
+        res.json({getHospital:getHospital,
+            message: "Get A Hospital Successfully"
+        })
     } catch (error) {
         next(error)
     }
 }
 
+
+exports.adminUpdateHospital = async(req, res, next) => {
+    try {
+        // Debug logs to see what's available
+        console.log("Request params:", req.params);
+        console.log("Request body:", req.body);
+        console.log("Request query:", req.query);
+        
+        const { id } = req.params; // Get ID from URL parameters
+        console.log("Extracted ID:", id); // Check if this is undefined
+        
+        const { contactInfo,name } = req.body;
+        
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Hospital ID is required"
+            });
+        }
+        
+        const updateHospital = await prisma.hospital.update({
+            where: { id: parseInt(id) },
+            data: {
+                contactInfo: contactInfo,
+                name:name
+            }
+        });
+        
+        res.json({
+            message: "Update hospital successfully",
+            data: updateHospital,
+        });
+    } catch (error) {
+        console.error("Error updating hospital:", error);
+        next(error);
+    }
+}
+
+exports.adminUpdateHospital = async(req, res, next) => {
+    try {
+        // Debug logs to see what's available
+        console.log("Request params:", req.params);
+        console.log("Request body:", req.body);
+        console.log("Request query:", req.query);
+        
+        const { id } = req.params; // Get ID from URL parameters
+        console.log("Extracted ID:", id); // Check if this is undefined
+        
+        const { contactInfo } = req.body;
+        
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Hospital ID is required"
+            });
+        }
+        
+        const updateHospital = await prisma.hospital.update({
+            where: { id: parseInt(id) },
+            data: {
+                contactInfo: contactInfo,
+            }
+        });
+        
+        res.json({
+            message: "Update hospital successfully",
+            data: updateHospital,
+        });
+    } catch (error) {
+        console.error("Error updating hospital:", error);
+        next(error);
+    }
+}
 exports.adminDeleteHospital = async(req, res, next) => {
     try {
         const { hospital_id } = req.body;
