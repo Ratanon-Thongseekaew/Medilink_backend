@@ -98,7 +98,7 @@ model Appointment {
   id   Int             @id @default(autoincrement())
   user             User            @relation(fields: [userId], references: [id])
   userId          Int
-  doctor           Doctor          @relation(fields: [doctorId], references: [id])
+  doctor           Doctor          @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   doctorId        Int
   appointmentDate DateTime
   status           Status          @default(PENDING)
@@ -107,9 +107,9 @@ model Appointment {
   createdAt        DateTime         @default(now()) @db.Timestamp(0)
   updatedAt        DateTime        @updatedAt
   note             String?
-  DoctorSchedule   DoctorSchedule? @relation(fields: [doctorScheduleId], references: [id])
+  DoctorSchedule   DoctorSchedule? @relation(fields: [doctorScheduleId], references: [id], onDelete: SetNull)
   doctorScheduleId Int?
-  DoctorOvertime   DoctorOvertime? @relation(fields: [doctorOvertimeId], references: [id])
+  DoctorOvertime   DoctorOvertime? @relation(fields: [doctorOvertimeId], references: [id], onDelete: SetNull)
   doctorOvertimeId Int?
 }
 
@@ -163,7 +163,7 @@ model DoctorSchedule {
   id          Int           @id @default(autoincrement())
   day         Day
   doctorId    Int?
-  doctor      Doctor?       @relation(fields: [doctorId], references: [id])
+  doctor      Doctor?       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   Time        Time?         @relation(fields: [timeId], references: [id])
   timeId      Int?
   appointment Appointment[]
@@ -173,7 +173,7 @@ model DoctorOvertime {
   id          Int           @id @default(autoincrement())
   date        DateTime      @db.Date()
   doctorId    Int?
-  doctor      Doctor?       @relation(fields: [doctorId], references: [id])
+  doctor      Doctor?       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   Time        Time?         @relation(fields: [timeId], references: [id])
   timeId      Int?
   appointment Appointment[]
@@ -183,7 +183,7 @@ model DoctorLeave {
   id       Int      @id @default(autoincrement())
   date     DateTime @db.Date()
   doctorId Int?
-  doctor   Doctor?  @relation(fields: [doctorId], references: [id])
+  doctor   Doctor?  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   Time     Time?    @relation(fields: [timeId], references: [id])
   timeId   Int?
   reason   String
