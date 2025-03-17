@@ -8,6 +8,9 @@ programRouter.get("/all",authenticate,programController.userGetAllPrograms)
 programRouter.get("/:id", authenticate,programController.UserGetProgramDetail)
 //create
 programRouter.post("/create",authenticate, upload.single("profileImg"), programController.adminCreateProgram)
-
+//update
+programRouter.put("/update/:id",authenticate,upload.single("profileImg"),programController.adminUpdateProgram)
+//delete
+programRouter.delete("/:id",authenticate,programController.adminDeleteProgram)
 
 module.exports = programRouter
