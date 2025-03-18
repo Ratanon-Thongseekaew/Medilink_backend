@@ -23,20 +23,21 @@ exports.adminGetAllHospital = async (req, res, next) => {
   };
 
   //done
-exports.adminCreateHospital = async(req,res,next)=>{
+  exports.adminCreateHospital = async (req, res, next) => {
     try {
-        const {name, contactInfo,  latitude, longitude, address} = req.body
-
+        const { name, contactInfo, latitude, longitude, address } = req.body;
+        
         const checkHospital = await prisma.hospital.findFirst({
-            where :{
+            where: {
                 name: name,
-            }
-        })
-        if(checkHospital){
-            createError(400, "Hospital is already have in system")
-        }
-        const profileImg = req.file ? req.file.path : null;
+            },
+        });
 
+        if (checkHospital) {
+            return next(createError(400, "Hospital is already in system"));
+        }
+
+        const profileImg = req.file ? req.file.path : null;
 
          // สร้าง Location และ Hospital พร้อมกัน
          const createHospital = await prisma.hospital.create({
@@ -60,10 +61,10 @@ exports.adminCreateHospital = async(req,res,next)=>{
             createHospital: createHospital,
             message :"Create Hospital Successfully"})
     } catch (error) {
-        next(error)
+        next(error);
     }
-    
-}
+};
+
 //done
 exports.adminGetHospital = async (req, res, next) =>{
     const {id} = req.params
@@ -209,3 +210,20 @@ exports.adminDeleteHospital = async(req, res, next) => {
         next(error);
     }
 }
+
+exports.userGetAllHospital = async (req, res, next) => {
+    try {
+      const hospitals = await prisma.hospital.findMany({
+        include: {
+          location: true // Include the related location data
+        }
+      });
+      
+      res.json({
+        message: "Get Hospital list",
+        data: hospitals,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
