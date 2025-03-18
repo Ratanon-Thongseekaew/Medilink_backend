@@ -1,5 +1,7 @@
 const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
+const stripe = require('stripe')('sk_test_51R3rIn2MGjRxxELSU6HwntWTt0QWTD4Hb6hNI6hebWgcG7xo19WeZUH0Qirt2uoaFHEwFid5A99ba5AP98YTGrIO00PbfuDfgr');
+
 const cloudinary = require("../configs/cloudinary");
 const fs = require("fs");
 const path = require("path");
@@ -217,4 +219,81 @@ try {
 }
 }
 
+exports.checkout = async(req,res,next)=>{
+  try {
+    const {id} = req.body
+    //step 1 find program
+    const program = await prisma.program.findFirst({
+      where:{
+        id:Number(id)
+      },
+      include:{
+        program:{
+          select:{
+            id:true,
+            name:true,
+            price:true,
+            profileImg:true
+          }
+        }
+      }
+    })
+    if(!program){
+      return createError(404, "Program is not found")
+    }
+    const {name,price, profileImg} = program
+    console.log(name,price, profileImg);
+    //step2: Stripe
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: 'embedded',
+      line_items: [
+        {
+          // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+          quantity: 1,
+          price_data:{
+            currency: 'thb',
+            product_data:{
+               name:name,
+               images:[profileImg],
+               description: 'Thank You for Purchase!'
+            },
+            unit_amount: price*100
+          }
+        },
+      ],
+      mode: 'payment',
+      return_url: `http://localhost:5173/user/checkout{CHECKOUT_SESSION_ID}`,
+    });
+  
+    res.send({clientSecret: session.client_secret});
+  } catch (error) {
+    next(error)
+  }
+}
 
+exports.checkoutStatus = async (req,res,next)=>{
+try {
+   // code
+   const { session_id } = req.params;
+   const session = await stripe.checkout.sessions.retrieve(session_id);
+   const PaymentId = session.metadata?.PaymentId;
+   // Check
+   if (session.status !== "complete" || !PaymentId) {
+     return renderError(400, "Something Wrong!!!!");
+   }
+   // Update DB paymentStatus => true
+   const result = await prisma.payment.update({
+     where: {
+       id: Number(PaymentId),
+     },
+     data: {
+       status: true,
+     },
+   });
+
+   res.json({ message: "Payment Complete", status: session.status });
+} catch (error) {
+  next(error)
+}
+
+}

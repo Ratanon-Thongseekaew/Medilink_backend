@@ -13,7 +13,7 @@ hospitalRouter.get('/getAllHospital',authenticate,hospitalController.adminGetAll
 //doone
 hospitalRouter.get("/:id", authenticate,hospitalController.adminGetHospital)
 //doing
-hospitalRouter.put('/:id',authenticate,hospitalController.adminUpdateHospital)
+hospitalRouter.patch('/:id', upload.single("profileImg"),authenticate,hospitalController.adminUpdateHospital)
 //doing
 hospitalRouter.delete('/:id',authenticate,hospitalController.adminDeleteHospital)
 
