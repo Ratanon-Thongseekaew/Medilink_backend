@@ -122,6 +122,7 @@ model Program {
   createdAt   DateTime @default(now()) @db.Timestamp(0)
   updatedAt   DateTime @updatedAt
   profileImg  String?
+  date DateTime?  @db.Date()
 }
 
 model Order {
