@@ -13,4 +13,8 @@ programRouter.put("/update/:id",authenticate,upload.single("profileImg"),program
 //delete
 programRouter.delete("/:id",authenticate,programController.adminDeleteProgram)
 
+//Payment
+programRouter.post("/checkout",authenticate,programController.checkout)
+
+
 module.exports = programRouter

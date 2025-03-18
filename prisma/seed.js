@@ -4,6 +4,79 @@ const prisma = new PrismaClient();
 
 const hashedPassword = bcrypt.hashSync("123456", 10);
 
+const programData = [
+  {
+    name: "Basic Annual Checkup",
+    description:
+      "Complete physical examination with standard blood panel, blood pressure, BMI assessment, and doctor consultation.",
+    price: 3500.0,
+    profileImg: "/images/health-packages/basic-checkup.jpg",
+  },
+  {
+    name: "Comprehensive Health Screening",
+    description:
+      "Full-body health assessment including advanced blood work, cardiovascular testing, vision and hearing tests, and detailed health report.",
+    price: 12500.0,
+    profileImg: "/images/health-packages/comprehensive-screening.jpg",
+  },
+  {
+    name: "Executive Health Package",
+    description:
+      "Premium health screening with full body scan, comprehensive blood analysis, stress test, nutritional assessment, and personalized health plan.",
+    price: 25000.0,
+    profileImg: "/images/health-packages/executive-package.jpg",
+  },
+  {
+    name: "Family Health Plan",
+    description:
+      "Annual checkups for a family of four, including basic health screenings, vaccinations, and pediatric consultations.",
+    price: 18000.0,
+    profileImg: "/images/health-packages/family-plan.jpg",
+  },
+  {
+    name: "Senior Wellness Program",
+    description:
+      "Specialized health package for seniors including bone density scan, cognitive assessment, prescription review, and specialized geriatric consultation.",
+    price: 9500.0,
+    profileImg: "/images/health-packages/senior-wellness.jpg",
+  },
+  {
+    name: "Women's Health Checkup",
+    description:
+      "Comprehensive women's health screening including mammogram, pap smear, hormone level testing, and gynecological consultation.",
+    price: 8500.0,
+    profileImg: "/images/health-packages/womens-health.jpg",
+  },
+  {
+    name: "Men's Health Checkup",
+    description:
+      "Specialized package for men including prostate screening, testosterone level testing, cardiac risk assessment, and urological consultation.",
+    price: 7800.0,
+    profileImg: "/images/health-packages/mens-health.jpg",
+  },
+  {
+    name: "Heart & Vascular Screening",
+    description:
+      "Focused cardiovascular assessment with ECG, echocardiogram, coronary calcium scoring, and consultation with a cardiologist.",
+    price: 15000.0,
+    profileImg: "/images/health-packages/heart-screening.jpg",
+  },
+  {
+    name: "Diabetes Prevention & Management",
+    description:
+      "Comprehensive screening for diabetes risk factors, insulin resistance testing, nutritional counseling, and personalized management plan.",
+    price: 6500.0,
+    profileImg: "/images/health-packages/diabetes-management.jpg",
+  },
+  {
+    name: "Corporate Wellness Package",
+    description:
+      "Group health screening package for companies including basic health assessments, stress evaluations, and health education workshops.",
+    price: 2800.0,
+    profileImg: "/images/health-packages/corporate-wellness.jpg",
+  },
+];
+
 const doctorData = [
   {
     firstname: "John",
@@ -288,6 +361,7 @@ console.log("DB seed...");
 //   await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
 // }
 async function run() {
+  await prisma.program.createMany({data:programData});
   await prisma.time.createMany({ data: timeData });
   await prisma.specialty.createMany({ data: specialtyData });
   await prisma.location.createMany({ data: locationData });
