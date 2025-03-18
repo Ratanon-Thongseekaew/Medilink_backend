@@ -1,6 +1,9 @@
 const prisma = require('../configs/prisma')
 const createError = require('../utils/createError')
-
+const cloudinary = require("../configs/cloudinary");
+const fs = require("fs");
+const path = require("path");
+const { connect } = require("http2");
 //done
 exports.adminGetAllHospital = async (req, res, next) => {
     try {
@@ -22,7 +25,7 @@ exports.adminGetAllHospital = async (req, res, next) => {
   //done
 exports.adminCreateHospital = async(req,res,next)=>{
     try {
-        const {name, contactInfo, locationId} = req.body
+        const {name, contactInfo,  latitude, longitude, address} = req.body
 
         const checkHospital = await prisma.hospital.findFirst({
             where :{
@@ -35,20 +38,27 @@ exports.adminCreateHospital = async(req,res,next)=>{
         const profileImg = req.file ? req.file.path : null;
 
 
-        const hospital = await prisma.hospital.create({
-            data :{
+         // สร้าง Location และ Hospital พร้อมกัน
+         const createHospital = await prisma.hospital.create({
+            data: {
                 name: name,
-                contactInfo :contactInfo,
+                contactInfo: contactInfo,
+                profileImg: profileImg,
                 location: {
-                    connect: {
-                        id: parseInt(locationId), // Connect to existing Location
+                    create: {
+                        latitude: parseFloat(latitude),
+                        longitude: parseFloat(longitude),
+                        address: address,
                     },
                 },
-                profileImg: profileImg,
-                
-            }
-        })
-        res.json({message :"Create Hospital Successfully"})
+            },
+            include: {
+                location: true, // แถมข้อมูล Location กลับมาให้ดูด้วย
+            },
+        });
+        res.json({
+            createHospital: createHospital,
+            message :"Create Hospital Successfully"})
     } catch (error) {
         next(error)
     }
@@ -89,7 +99,7 @@ exports.adminGetHospital = async (req, res, next) =>{
     }
 }
 
-
+//done
 exports.adminUpdateHospital = async(req, res, next) => {
     try {
         // Debug logs to see what's available
@@ -100,7 +110,7 @@ exports.adminUpdateHospital = async(req, res, next) => {
         const { id } = req.params; // Get ID from URL parameters
         console.log("Extracted ID:", id); // Check if this is undefined
         
-        const { contactInfo,name } = req.body;
+        const { contactInfo,name,locationId } = req.body;
         
         if (!id) {
             return res.status(400).json({
@@ -108,13 +118,25 @@ exports.adminUpdateHospital = async(req, res, next) => {
                 message: "Hospital ID is required"
             });
         }
+
+        const profileImg = req.file ? req.file.path : undefined;
+
+        const updateData = {
+            contactInfo,
+            name,
+        };
         
+        if (profileImg) {
+            updateData.profileImg = profileImg;
+        }
+        if (locationId && !isNaN(parseInt(locationId))) {
+            updateData.location = {
+                connect: { id: parseInt(locationId) }
+            };
+        }
         const updateHospital = await prisma.hospital.update({
             where: { id: parseInt(id) },
-            data: {
-                contactInfo: contactInfo,
-                name:name
-            }
+            data: updateData
         });
         
         res.json({
@@ -127,56 +149,22 @@ exports.adminUpdateHospital = async(req, res, next) => {
     }
 }
 
-exports.adminUpdateHospital = async(req, res, next) => {
-    try {
-        // Debug logs to see what's available
-        console.log("Request params:", req.params);
-        console.log("Request body:", req.body);
-        console.log("Request query:", req.query);
-        
-        const { id } = req.params; // Get ID from URL parameters
-        console.log("Extracted ID:", id); // Check if this is undefined
-        
-        const { contactInfo } = req.body;
-        
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                message: "Hospital ID is required"
-            });
-        }
-        
-        const updateHospital = await prisma.hospital.update({
-            where: { id: parseInt(id) },
-            data: {
-                contactInfo: contactInfo,
-            }
-        });
-        
-        res.json({
-            message: "Update hospital successfully",
-            data: updateHospital,
-        });
-    } catch (error) {
-        console.error("Error updating hospital:", error);
-        next(error);
-    }
-}
+//done
 exports.adminDeleteHospital = async(req, res, next) => {
     try {
-        const { hospital_id } = req.body;
-        
-        // Validate input
-        if (!hospital_id) {
+        const { id } = req.params;
+
+        if (!id) {
             return res.status(400).json({
                 success: false,
                 message: "Hospital ID is required"
             });
         }
+        
 
         // First check if hospital exists
         const hospital = await prisma.hospital.findUnique({
-            where: { hospital_id: parseInt(hospital_id) },
+            where: { id: parseInt(id) },
             include: { doctors: true }
         });
 
@@ -199,7 +187,7 @@ exports.adminDeleteHospital = async(req, res, next) => {
         // Proceed with deletion if no related records
         const deleteHospital = await prisma.hospital.delete({
             where: {
-                hospital_id: parseInt(hospital_id)
+                id: parseInt(id)
             }
         });
         
@@ -218,7 +206,6 @@ exports.adminDeleteHospital = async(req, res, next) => {
                 message: "Cannot delete hospital with associated records. There might be appointments or other records referencing this hospital."
             });
         }
-        
         next(error);
     }
 }

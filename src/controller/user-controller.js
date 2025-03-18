@@ -24,7 +24,6 @@ module.exports.adminCreateUsers = async (req, res, next) => {
             uploadResult = await cloudinary.uploader.upload(req.file.path, {
 
 
-
                 overwrite: true,
                 public_id: path.parse(req.file.path).name
 
