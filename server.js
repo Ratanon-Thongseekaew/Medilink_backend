@@ -11,12 +11,14 @@ const userRouter = require("./src/routes/user-router");
 const appointmentRouter = require("./src/routes/appointment-router");
 const scheduleRouter = require("./src/routes/schedule-router");
 const handleError = require("./src/middlewares/handleError");
-// test
-const prisma = require('./src/configs/prisma')
-
-const { authenticate } = require("./src/middlewares/authenticate");
-// test
 const aiRouter = require("./src/routes/ai-router");
+const orderRouter = require("./src/routes/order-router");
+
+
+
+
+
+
 const app = express();
 
 // Middlewares
@@ -33,8 +35,7 @@ app.use("/api/schedule", scheduleRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter); 
 app.use("/api/ai", aiRouter); 
-
-// app.use('/api',userRouter)
+app.use("/api/order",orderRouter)
 
 
 
