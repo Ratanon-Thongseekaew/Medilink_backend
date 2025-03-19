@@ -1,6 +1,6 @@
 const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
-const stripe = require('stripe')('sk_test_51R3rIn2MGjRxxELSU6HwntWTt0QWTD4Hb6hNI6hebWgcG7xo19WeZUH0Qirt2uoaFHEwFid5A99ba5AP98YTGrIO00PbfuDfgr');
+const stripe = require('stripe')(process.env.STRIPE_API_KEY);
 
 const cloudinary = require("../configs/cloudinary");
 const fs = require("fs");

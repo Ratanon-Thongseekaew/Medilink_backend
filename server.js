@@ -15,6 +15,7 @@ const handleError = require("./src/middlewares/handleError");
 
 
 const aiRouter = require("./src/routes/ai-router");
+const orderRouter = require("./src/routes/order-router");
 // test
 const app = express();
 
@@ -32,8 +33,7 @@ app.use("/api/schedule", scheduleRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter); 
 app.use("/api/ai", aiRouter); 
-
-// app.use('/api',userRouter)
+app.use("/api/order",orderRouter)
 
 
 
