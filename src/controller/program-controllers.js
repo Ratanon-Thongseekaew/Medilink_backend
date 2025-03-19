@@ -1,6 +1,6 @@
 const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
-const stripe = require('stripe')('sk_test_51R3rIn2MGjRxxELSU6HwntWTt0QWTD4Hb6hNI6hebWgcG7xo19WeZUH0Qirt2uoaFHEwFid5A99ba5AP98YTGrIO00PbfuDfgr');
+const stripe = require('stripe')('sk_test_51R1NHoFWX5EVFtiEHYBEELtt12uJWtvNV6yaAa7Rrsf3uLbc2zPyaHxVk6RRTGrkjRfwiMeCywr7VzPryceTePOn00poZPFA80');
 
 const cloudinary = require("../configs/cloudinary");
 const fs = require("fs");
@@ -223,7 +223,7 @@ exports.checkout = async(req,res,next)=>{
   try {
     const {id} = req.body
     //step 1 find program
-    const program = await prisma.program.findFirst({
+    const order = await prisma.order.findFirst({
       where:{
         id:Number(id)
       },
@@ -235,17 +235,27 @@ exports.checkout = async(req,res,next)=>{
             price:true,
             profileImg:true
           }
+        },
+        payment:{
+          select:{
+            id:true,
+            amount:true,
+            status:true,
+            method:true
+          }
         }
       }
     })
-    if(!program){
-      return createError(404, "Program is not found")
+    if(!order){
+      return createError(404, "Order is not found")
     }
-    const {name,price, profileImg} = program
-    console.log(name,price, profileImg);
+    console.log('order', order)
+    const {userId,paymentId, programId,program,payment,} = order
+
     //step2: Stripe
     const session = await stripe.checkout.sessions.create({
       ui_mode: 'embedded',
+      metadata:{orderId : order.id},
       line_items: [
         {
           // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
@@ -253,16 +263,16 @@ exports.checkout = async(req,res,next)=>{
           price_data:{
             currency: 'thb',
             product_data:{
-               name:name,
-               images:[profileImg],
+               name:program.name,
+               images:[paymentId],
                description: 'Thank You for Purchase!'
             },
-            unit_amount: price*100
+            unit_amount: payment.amount*100
           }
         },
       ],
       mode: 'payment',
-      return_url: `http://localhost:5173/user/checkout{CHECKOUT_SESSION_ID}`,
+      return_url: `http://localhost:5173/checkout-complete/{CHECKOUT_SESSION_ID}`,
     });
   
     res.send({clientSecret: session.client_secret});
@@ -276,18 +286,19 @@ try {
    // code
    const { session_id } = req.params;
    const session = await stripe.checkout.sessions.retrieve(session_id);
-   const PaymentId = session.metadata?.PaymentId;
+   const orderId = session.metadata?.orderId;
+   console.log('session.metadata', session.metadata)
    // Check
-   if (session.status !== "complete" || !PaymentId) {
-     return renderError(400, "Something Wrong!!!!");
+   if (session.status !== "complete" || !orderId) {
+     return createError(400, "Something Wrong!!!!");
    }
    // Update DB paymentStatus => true
-   const result = await prisma.payment.update({
+   const result = await prisma.order.update({
      where: {
-       id: Number(PaymentId),
+       id: Number(orderId),
      },
      data: {
-       status: true,
+       status: "SUCCESS",
      },
    });
 

@@ -16,5 +16,6 @@ programRouter.delete("/:id",authenticate,programController.adminDeleteProgram)
 //Payment
 programRouter.post("/checkout",authenticate,programController.checkout)
 
+programRouter.get("/checkout-status/:session_id",authenticate,programController.checkoutStatus)
 
 module.exports = programRouter
