@@ -10,70 +10,70 @@ const programData = [
     description:
       "Complete physical examination with standard blood panel, blood pressure, BMI assessment, and doctor consultation.",
     price: 3500.0,
-    profileImg: "/images/health-packages/basic-checkup.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/cancer_screening_package_banner_rpkpi4.jpg",
   },
   {
     name: "Comprehensive Health Screening",
     description:
       "Full-body health assessment including advanced blood work, cardiovascular testing, vision and hearing tests, and detailed health report.",
     price: 12500.0,
-    profileImg: "/images/health-packages/comprehensive-screening.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/comprehensive_health_screening_banner_xlvl4i.jpg",
   },
   {
     name: "Executive Health Package",
     description:
       "Premium health screening with full body scan, comprehensive blood analysis, stress test, nutritional assessment, and personalized health plan.",
     price: 25000.0,
-    profileImg: "/images/health-packages/executive-package.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368421/health_checkup_package_banner_msva4n.jpg",
   },
   {
     name: "Family Health Plan",
     description:
       "Annual checkups for a family of four, including basic health screenings, vaccinations, and pediatric consultations.",
     price: 18000.0,
-    profileImg: "/images/health-packages/family-plan.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/family_health_plan_banner_de4flr.jpg",
   },
   {
     name: "Senior Wellness Program",
     description:
       "Specialized health package for seniors including bone density scan, cognitive assessment, prescription review, and specialized geriatric consultation.",
     price: 9500.0,
-    profileImg: "/images/health-packages/senior-wellness.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/senior_wellness_program_banner_q4rx1y.jpg",
   },
   {
     name: "Women's Health Checkup",
     description:
       "Comprehensive women's health screening including mammogram, pap smear, hormone level testing, and gynecological consultation.",
     price: 8500.0,
-    profileImg: "/images/health-packages/womens-health.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/womens_health_checkup_banner_jducxh.jpg",
   },
   {
     name: "Men's Health Checkup",
     description:
       "Specialized package for men including prostate screening, testosterone level testing, cardiac risk assessment, and urological consultation.",
     price: 7800.0,
-    profileImg: "/images/health-packages/mens-health.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/mens_health_checkup_banner_gsmaxk.jpg",
   },
   {
     name: "Heart & Vascular Screening",
     description:
       "Focused cardiovascular assessment with ECG, echocardiogram, coronary calcium scoring, and consultation with a cardiologist.",
     price: 15000.0,
-    profileImg: "/images/health-packages/heart-screening.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/heart_vascular_screening_banner_vasvn7.jpg",
   },
   {
     name: "Diabetes Prevention & Management",
     description:
       "Comprehensive screening for diabetes risk factors, insulin resistance testing, nutritional counseling, and personalized management plan.",
     price: 6500.0,
-    profileImg: "/images/health-packages/diabetes-management.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/diabetes_prevention_management_banner_esfp7z.jpg",
   },
   {
     name: "Corporate Wellness Package",
     description:
       "Group health screening package for companies including basic health assessments, stress evaluations, and health education workshops.",
     price: 2800.0,
-    profileImg: "/images/health-packages/corporate-wellness.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/corporate_wellness_package_banner_eg24lj.jpg",
   },
 ];
 
@@ -84,7 +84,7 @@ const doctorData = [
     specialtyId: 1,
     hospitalId: 1,
     experience: "10 Years",
-    profileImg: "https://example.com/images/john_doe.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-4_gel7vc.jpg",
   },
   {
     firstname: "Jane",
@@ -92,7 +92,7 @@ const doctorData = [
     specialtyId: 2,
     hospitalId: 2,
     experience: "8 Years",
-    profileImg: "https://example.com/images/jane_smith.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/doctor-1_ptalux.jpg",
   },
   {
     firstname: "Michael",
@@ -100,7 +100,7 @@ const doctorData = [
     specialtyId: 3,
     hospitalId: 1,
     experience: "12 Years",
-    profileImg: "https://example.com/images/michael_brown.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-6_hzxohp.jpg",
   },
   {
     firstname: "Emily",
@@ -108,7 +108,7 @@ const doctorData = [
     specialtyId: 4,
     hospitalId: 3,
     experience: "5 Years",
-    profileImg: "https://example.com/images/emily_johnson.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-5_q5sqqk.jpg",
   },
   {
     firstname: "David",
@@ -116,7 +116,7 @@ const doctorData = [
     specialtyId: 1,
     hospitalId: 2,
     experience: "15 Years",
-    profileImg: "https://example.com/images/david_williams.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-4_gel7vc.jpg",
   },
   {
     firstname: "Sophia",
@@ -124,7 +124,7 @@ const doctorData = [
     specialtyId: 2,
     hospitalId: 3,
     experience: "7 Years",
-    profileImg: "https://example.com/images/sophia_miller.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-3_s9lqmy.jpg",
   },
   {
     firstname: "Daniel",
@@ -132,7 +132,7 @@ const doctorData = [
     specialtyId: 3,
     hospitalId: 1,
     experience: "10 Years",
-    profileImg: "https://example.com/images/daniel_taylor.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-6_hzxohp.jpg",
   },
   {
     firstname: "Olivia",
@@ -140,7 +140,7 @@ const doctorData = [
     specialtyId: 4,
     hospitalId: 2,
     experience: "9 Years",
-    profileImg: "https://example.com/images/olivia_anderson.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-2_ywmkvi.jpg",
   },
   {
     firstname: "James",
@@ -148,7 +148,7 @@ const doctorData = [
     specialtyId: 1,
     hospitalId: 3,
     experience: "11 Years",
-    profileImg: "https://example.com/images/james_thomas.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-4_gel7vc.jpg",
   },
   {
     firstname: "Isabella",
@@ -156,7 +156,7 @@ const doctorData = [
     specialtyId: 2,
     hospitalId: 1,
     experience: "6 Years",
-    profileImg: "https://example.com/images/isabella_moore.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/doctor-1_ptalux.jpg",
   },
 ];
 
@@ -362,12 +362,12 @@ console.log("DB seed...");
 // }
 async function run() {
   await prisma.program.createMany({data:programData});
-  await prisma.time.createMany({ data: timeData });
-  await prisma.specialty.createMany({ data: specialtyData });
-  await prisma.location.createMany({ data: locationData });
-  await prisma.hospital.createMany({ data: hospitalData });
+  // await prisma.time.createMany({ data: timeData });
+  // await prisma.specialty.createMany({ data: specialtyData });
+  // await prisma.location.createMany({ data: locationData });
+  // await prisma.hospital.createMany({ data: hospitalData });
   await prisma.doctor.createMany({ data: doctorData });
-  await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
+  // await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
 }
 
 run();
