@@ -3,6 +3,7 @@ const prisma = require("../configs/prisma");
 const {
   findIntervalSelectedDate,
   findPlusAndMinusTwoDate,
+  groupAndSortSchedules,
 } = require("../utils/schedule-servies");
 
 const days = [
@@ -19,12 +20,26 @@ module.exports.getDoctorSchedulesByDoctorIdAndDay = async (req, res, next) => {
   try {
     const { doctorId, selectedDate } = req.query;
 
-    if (!doctorId) {
-      createError(400, "doctor id to be provided");
+    const now = new Date();
+    const futureDate = new Date(now);
+    futureDate.setDate(futureDate.getDate() + 91);
+    console.log(futureDate);
+
+    console.log("selectedDate :>> ", selectedDate);
+
+    if (!doctorId || isNaN(doctorId)) {
+      createError(400, "doctor id invalid");
     }
 
-    if (!selectedDate) {
-      createError(400, "selected date to be provided");
+    if (!selectedDate || typeof selectedDate !== ("string" || "number")) {
+      createError(400, "selected date invalid");
+    }
+
+    if (new Date(selectedDate) <= now || new Date(selectedDate) > futureDate) {
+      createError(
+        400,
+        "Appointments can be scheduled from tomorrow to 90 days ahead"
+      );
     }
 
     /**
@@ -32,11 +47,36 @@ module.exports.getDoctorSchedulesByDoctorIdAndDay = async (req, res, next) => {
      * @param {Date} selectedDate
      */
 
+    const workDays = await prisma.doctorSchedule.groupBy({
+      where: {
+        doctorId: Number(doctorId),
+        // day: {
+        //   in: intervalDay,
+        // },
+      },
+      by: ["day"],
+    });
+
+    const interval = workDays.map((el) => {
+      return el.day;
+    });
+
+    // [
+    // 'MONDAY',
+    // "TUESDAY",
+    // "WEDNESDAY"
+    // ]
+
+    const { intervalDate, dayAndDate } = findIntervalSelectedDate(
+      interval,
+      selectedDate
+    );
+
     const schedules = await prisma.doctorSchedule.findMany({
       where: {
         doctorId: Number(doctorId),
         day: {
-          in: findIntervalSelectedDate(selectedDate),
+          in: interval,
         },
       },
       include: {
@@ -46,11 +86,13 @@ module.exports.getDoctorSchedulesByDoctorIdAndDay = async (req, res, next) => {
 
     // console.log("schedules :>> ", schedules);
 
+    // console.log("schedules :>> ", schedules);
+
     const overtimes = await prisma.doctorOvertime.findMany({
       where: {
         doctorId: Number(doctorId),
         date: {
-          in: findPlusAndMinusTwoDate(selectedDate),
+          in: intervalDate,
         },
       },
       include: {
@@ -58,21 +100,23 @@ module.exports.getDoctorSchedulesByDoctorIdAndDay = async (req, res, next) => {
       },
     });
 
-    console.log("overtimes :>> ", overtimes);
+    // console.log("overtimes :>> ", overtimes);
 
     const leaves = await prisma.doctorLeave.findMany({
       where: {
         doctorId: Number(doctorId),
         date: {
-          in: findPlusAndMinusTwoDate(selectedDate),
+          in: intervalDate,
         },
       },
     });
 
     // console.log("leaves :>> ", leaves);
+
     let scheduleWithoutLeaveDay = [];
 
     if (leaves) {
+      // console.log("JING :>> ");
       const leaveDaysNum = [
         ...new Set(
           leaves.map((el) => {
@@ -98,56 +142,44 @@ module.exports.getDoctorSchedulesByDoctorIdAndDay = async (req, res, next) => {
       scheduleWithoutLeaveDay = schedules.filter(
         (el) => !leaveSchedules.includes(el)
       );
-      console.log("scheduleWithoutLeaveDay :>> ", scheduleWithoutLeaveDay);
+      // console.log("scheduleWithoutLeaveDay :>> ", scheduleWithoutLeaveDay);
     }
+
+    const bookedShedule = await prisma.appointment.findMany({
+      where: {
+        doctorId: Number(doctorId),
+        appointmentDate: {
+          in: intervalDate,
+        },
+
+        OR: [
+          {
+            doctorOvertimeId: {
+              in: overtimes.map((el) => {
+                return el.id;
+              }),
+            },
+          },
+          {
+            doctorScheduleId: {
+              in: scheduleWithoutLeaveDay.map((el) => {
+                return el.id;
+              }),
+            },
+          },
+        ],
+      },
+    });
+
+    // console.log("bookedShedule :>> ", bookedShedule);
 
     let resulteSchedules = [];
     if (overtimes) {
       resulteSchedules = scheduleWithoutLeaveDay.concat(overtimes);
-      // const overtimeDaysNum = [
-      //   ...new Set(
-      //     overtimes.map((el) => {
-      //       const onlyDay = new Date(el.date).getDay();
-      //       return onlyDay;
-      //     })
-      //   ),
-      // ];
-      // console.log("overtimeDaysNum :>> ", overtimeDaysNum);
-      // const overtimeDays = overtimeDaysNum.map((el) => {
-      //   return days[el];
-      // });
-      // console.log("overtimeDays :>> ", overtimeDays);
-      // const overtimeSchedules = leaveSchedules.filter(
-      //   (el) =>
-      //     overtimeDays.includes(el.day) &&
-      //     leaves.some((leave) => leave.timeId === el.timeId)
-      // );
-      // console.log("overtimeSchedules :>> ", overtimeSchedules);
     }
-    console.log("resulteSchedules :>> ", resulteSchedules);
+    // console.log("resulteSchedules :>> ", resulteSchedules);
 
     //ลองเพิ่มวันที่ลาในDB
-
-    // console.log("leaves :>> ", leaves);
-    // const testSchedules = await prisma.doctor.groupBy({
-    //   by: ["id"],
-    //   where: {
-    //     doctorSchedules: {
-    //       every: {
-    //         day: {
-    //           in: ["MONDAY"]
-    //         }
-    //       }
-    //     }
-    //   }
-    // })
-
-    // const doctorTime = {
-    //   decrease: [],
-    //   increase: [],
-    // };
-
-    // console.log("Schedules", schedules);
 
     // for (let schedule of schedules) {
     // }
@@ -171,12 +203,23 @@ module.exports.getDoctorSchedulesByDoctorIdAndDay = async (req, res, next) => {
     // });
 
     // เอามาแค่เวลาจาก ISO
+    // console.log("resultSchedules :>> ", resulteSchedules);
 
-    resulteSchedules.map((resulteSchedule) => {
-      // console.log(
-      //   resulteSchedule.Time.startTime.toISOString().split("T")[1].split(".")[0]
-      // );
-      // console.log(resulteSchedule.Time.endTime);
+    const finalSchedule = resulteSchedules.filter((resulteSchedule) => {
+      if (resulteSchedule.day) {
+        const bookedId = bookedShedule.filter((el) => {
+          return el.doctorScheduleId === resulteSchedule.id;
+        });
+        return bookedId.length === 0;
+      } else if (resulteSchedule.date) {
+        const bookedId = bookedShedule.filter((el) => {
+          return el.doctorOvertimeId === resulteSchedule.id;
+        });
+        return bookedId.length === 0;
+      }
+    });
+
+    finalSchedule.forEach((resulteSchedule) => {
       resulteSchedule.Time.startTime = resulteSchedule.Time.startTime
         .toISOString()
         .split("T")[1]
@@ -187,14 +230,9 @@ module.exports.getDoctorSchedulesByDoctorIdAndDay = async (req, res, next) => {
         .split(".")[0];
     });
 
-    const groupedSchedules = resulteSchedules.reduce((acc, resulteSchedule) => {
-      const day = resulteSchedule.day;
-      if (!acc[day]) {
-        acc[day] = [];
-      }
-      acc[day].push(resulteSchedule);
-      return acc;
-    }, {});
+    // ทดสอบฟังก์ชัน
+    const groupedSchedules = groupAndSortSchedules(finalSchedule, dayAndDate);
+    // console.log(groupedSchedules);
 
     res.json({ groupedSchedules });
   } catch (error) {
