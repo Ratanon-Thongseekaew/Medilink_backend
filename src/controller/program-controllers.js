@@ -256,7 +256,7 @@ exports.checkout = async(req,res,next)=>{
     //step2: Stripe
     const session = await stripe.checkout.sessions.create({
       ui_mode: 'embedded',
-      metadata:{orderId : order.id},
+      metadata:{order : JSON.stringify(order)},
       line_items: [
         {
           // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
@@ -287,8 +287,12 @@ try {
    // code
    const { session_id } = req.params;
    const session = await stripe.checkout.sessions.retrieve(session_id);
-   const orderId = session.metadata?.orderId;
    console.log('session.metadata', session.metadata)
+   const order = JSON.parse(session?.metadata.order)
+   console.log('orderhggujguyhujiuyuyuyhuyh', order)
+   const orderId = order?.id
+   console.log('order?.id', order?.id)
+   console.log('session.status', session.status)
    // Check
    if (session.status !== "complete" || !orderId) {
      return createError(400, "Something Wrong!!!!");
@@ -303,7 +307,11 @@ try {
      },
    });
 
-   res.json({ message: "Payment Complete", status: session.status });
+        //    const sendMail = await sendEmail.doctorAppointment()
+
+        // console.log(sendMail);
+
+   res.json({ message: "Payment Complete", status: session.status ,order:order});
 } catch (error) {
   next(error)
 }
