@@ -1,7 +1,8 @@
 const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
 
-module.exports.getAllDoctordatas = async (req, res, next) => {
+//done
+exports.adminGetAllDoctors = async (req, res, next) => {
   try {
     const doctorDatas = await prisma.doctor.findMany({
       include: {
@@ -16,7 +17,8 @@ module.exports.getAllDoctordatas = async (req, res, next) => {
   }
 };
 
-module.exports.getDoctordatasbySpecialty = async (req, res, next) => {
+//done
+exports.adminGetDoctorbySpecialty = async (req, res, next) => {
   try {
     const { specialtyId } = req.params;
 
@@ -73,10 +75,10 @@ module.exports.getDoctordatasbyHospital = async (req, res, next) => {
     next(error);
   }
 };
-
-module.exports.getDoctorDataById = async (req, res, next) => {
+//done
+exports.adminGetDoctorById = async (req, res, next) => {
   try {
-    const { doctorId } = req.params;
+    const { id } = req.params;
 
     if (!doctorId) {
       createError(400, "doctor id to be provided");
@@ -88,7 +90,7 @@ module.exports.getDoctorDataById = async (req, res, next) => {
 
     const doctorDataById = await prisma.doctor.findUnique({
       where: {
-        id: Number(doctorId),
+        id: Number(id),
       },
       include: {
         specialty: true,
@@ -102,164 +104,143 @@ module.exports.getDoctorDataById = async (req, res, next) => {
   }
 };
 
-// exports.adminGetAllDoctors =async(req,res,next)=>{
-//    try {
-//         const doctors = await prisma.doctor.findMany({})
+//done
+exports.adminCreateDoctor = async (req, res, next) => {
+  try {
+    const { firstname, lastname, experience, specialtyId, hospitalId } =
+      req.body;
+    console.log("Request body:", req.body);
+    const parsedSpecialtyId = Number(specialtyId);
+    const parsedHospitalId = Number(hospitalId);
+    if (isNaN(parsedSpecialtyId) || isNaN(parsedHospitalId)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid specialtyId or hospitalId" });
+    }
+    const checkDoctor = await prisma.doctor.findFirst({
+      where: {
+        firstname: firstname,
+        lastname: lastname,
+      },
+    });
+    if (checkDoctor) {
+      return res
+        .status(400)
+        .json({ message: "Doctor is already have in system" });
+    }
+    const profileImg = req.file ? req.file.path : null;
+    const createDoctor = await prisma.doctor.create({
+      data: {
+        firstname: firstname,
+        lastname: lastname,
+        experience: experience,
+        specialtyId: parsedSpecialtyId,
+        hospitalId: parsedHospitalId,
+        profileImg: profileImg,
+      },
+    });
 
-//         // console.log(doctors)
-//         res.json({
-//             message: "Get Doctor list",
-//             data: doctors,
-//         });
-//     } catch (error) {
-//         next(error)
+    res.json({
+      message: "Doctor created successfully",
+      createDoctor: createDoctor,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+//doing
+exports.adminUpdateDoctor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { firstname, lastname, experience, specialtyId, hospitalId } =
+      req.body;
+    console.log("req.bodydasdasdasdasdasdasd", req.body);
+    console.log("req.params", req.params.id);
 
-//     }
-// }
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Doctor ID is required",
+      });
+    }
+    const profileImg = req.file ? req.file.path : undefined;
+    const updateData = {
+      firstname,
+      lastname,
+      experience,
+      specialtyId: specialtyId ? Number(specialtyId) : undefined,
+      hospitalId: hospitalId ? Number(hospitalId) : undefined,
+    };
+    if (profileImg) {
+      updateData.profileImg = profileImg;
+    }
+    const updateDoctor = await prisma.doctor.update({
+      where: { id: Number(id) },
+      data: updateData,
+    });
+    res.json({
+      message: "Update Doctor successfully",
+      data: updateDoctor,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-// exports.adminCreateDoctor = async (req, res, next) => {
-//     try {
-//         const {
-//             firstname,
-//             lastname,
-//             specialty_id,
-//             hospital_id,
+exports.adminDeleteDoctor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const deleteDoctor = await prisma.doctor.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+    res.json({
+      message: " delete doctor successfully",
+      data: deleteDoctor,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-//             experience,
-//         } = req.body;
+exports.adminCreateSpecialization = async (req, res, next) => {
+  try {
+    const { specialtyName } = req.body;
+    const checkSpecialization = await prisma.specialty.findFirst({
+      where: {
+        specialtyName: specialtyName,
+      },
+    });
+    if (checkSpecialization) {
+      createError(400, "Specialization is already have in system");
+    }
+    const createSpecialization = await prisma.specialty.create({
+      data:{
+        specialtyName:specialtyName
+      }
+    })
+    res.status(201).json({
+      message: "Specialization created successfully",
+      data: createSpecialization
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-//         // Validate and parse IDs
-//         const parsedSpecialtyId = parseInt(specialty_id);
-//         const parsedHospitalId = parseInt(hospital_id);
-
-//         if (isNaN(parsedSpecialtyId) || isNaN(parsedHospitalId)) {
-//             return res.status(400).json({ message: "Invalid specialty_id or hospital_id" });
-//         }
-//         const checkDoctor = await prisma.doctor.findFirst({
-//             where :{
-//                 firstname :firstname,
-//                 lastname : lastname
-//             }
-//         })
-//         if(checkDoctor){
-//             return res.status(400).json({ message: "Doctor is already have in system" });
-//         }
-
-//         const doctor = await prisma.doctor.create({
-//             data: {
-//                 firstname,
-//                 lastname,
-//                 specialty_id: parsedSpecialtyId, // Direct assignment
-//                 hospital_id: parsedHospitalId,   // Direct assignment
-//                 availability,
-//                 experience,
-//             },
-//         });
-
-//         res.json({
-//             message: "Doctor created successfully",
-//             data: doctor,
-//         });
-//     } catch (error) {
-//         console.error("Error creating doctor:", error);
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// };
-
-// exports.adminUpdateDoctor= async(req,res,next)=>{
-//     try {
-//         const {doctor_id, hospital_id,availability,experience} = req.body
-//         //update
-//        const updateDoctor =  await prisma.doctor.update({
-//             where : { doctor_id: doctor_id},
-//             data: {
-//                 hospital_id :hospital_id,
-//                 availability:availability,
-//                 experience:experience
-//             }
-//         })
-//         res.json({
-//             message: " update doctor successfully",
-//             data: updateDoctor,
-//         });
-//     } catch (error) {
-//         next(error)
-//     }
-// }
-
-// exports.adminDeleteDoctor= async(req,res,next)=>{
-//     try {
-//         const {doctor_id } = req.body
-
-//         const deleteDoctor = await prisma.doctor.delete({
-//             where :{
-//                 doctor_id: doctor_id
-//             }
-//         })
-//         res.json({
-//             message: " delete doctor successfully",
-//             data: deleteDoctor,
-//         });
-//     } catch (error) {
-//         next(error)
-//     }
-
-// }
-
-// exports.adminCreateSpecialty = async(req,res,next) =>{
-//     try {
-//         // req.body
-//     const { name } = req.body
-
-//     const checkSpecialty = await prisma.specialty.findFirst({
-//         where :{
-//             specialty_name: name,
-//         }
-//     })
-//     if(checkSpecialty){
-//         createError(400, "Specialty is already have in system")
-//     }
-
-//     //add to db
-//     const specialty = await prisma.specialty.create({
-//         data: {
-//             specialty_name: name,
-//         }
-//     })
-//     res.json({message: "Create Specialty"})
-//     } catch (error) {
-//         next(error)
-//     }
-// }
-
-// exports.adminCreateLocation = async(req,res,next)=>{
-//     try {
-//         const {latitude, longitude,address} = req.body
-
-//         const checkLocation = await prisma.location.findFirst({
-//             where :{
-//                 latitude: latitude,
-//                 longitude :longitude,
-//                 address: address,
-//             }
-//         })
-//         if(checkLocation){
-//             createError(400, "Location is already have in system")
-//         }
-
-//         const location = await prisma.location.create({
-//             data :{
-//                 latitude: latitude,
-//                 longitude :longitude,
-//                 address: address,
-//             }
-//         })
-//         res.status(201).json({
-//             message: "Location created successfully",
-//             data: location
-//         });
-//     } catch (error) {
-//         next(error)
-//     }
-
-// }
+exports.adminGetAllSpecialization  = async  (req, res, next) =>{
+try {
+  const specializationData = await prisma.specialty.findMany({
+    select:{
+      specialtyName:true
+    },
+  })
+  res.status(201).json({
+    message: "Specialization get successfully",
+    data: specializationData
+  });
+} catch (error) {
+  next(error)
+}
+}

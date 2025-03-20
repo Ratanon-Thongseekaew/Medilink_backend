@@ -4,287 +4,381 @@ const prisma = new PrismaClient();
 
 const hashedPassword = bcrypt.hashSync("123456", 10);
 
+const programData = [
+  {
+    name: "Basic Annual Checkup",
+    description:
+      "Complete physical examination with standard blood panel, blood pressure, BMI assessment, and doctor consultation.",
+    price: 3500.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/cancer_screening_package_banner_rpkpi4.jpg",
+  },
+  {
+    name: "Comprehensive Health Screening",
+    description:
+      "Full-body health assessment including advanced blood work, cardiovascular testing, vision and hearing tests, and detailed health report.",
+    price: 12500.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/comprehensive_health_screening_banner_xlvl4i.jpg",
+  },
+  {
+    name: "Executive Health Package",
+    description:
+      "Premium health screening with full body scan, comprehensive blood analysis, stress test, nutritional assessment, and personalized health plan.",
+    price: 25000.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368421/health_checkup_package_banner_msva4n.jpg",
+  },
+  {
+    name: "Family Health Plan",
+    description:
+      "Annual checkups for a family of four, including basic health screenings, vaccinations, and pediatric consultations.",
+    price: 18000.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/family_health_plan_banner_de4flr.jpg",
+  },
+  {
+    name: "Senior Wellness Program",
+    description:
+      "Specialized health package for seniors including bone density scan, cognitive assessment, prescription review, and specialized geriatric consultation.",
+    price: 9500.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/senior_wellness_program_banner_q4rx1y.jpg",
+  },
+  {
+    name: "Women's Health Checkup",
+    description:
+      "Comprehensive women's health screening including mammogram, pap smear, hormone level testing, and gynecological consultation.",
+    price: 8500.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/womens_health_checkup_banner_jducxh.jpg",
+  },
+  {
+    name: "Men's Health Checkup",
+    description:
+      "Specialized package for men including prostate screening, testosterone level testing, cardiac risk assessment, and urological consultation.",
+    price: 7800.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/mens_health_checkup_banner_gsmaxk.jpg",
+  },
+  {
+    name: "Heart & Vascular Screening",
+    description:
+      "Focused cardiovascular assessment with ECG, echocardiogram, coronary calcium scoring, and consultation with a cardiologist.",
+    price: 15000.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/heart_vascular_screening_banner_vasvn7.jpg",
+  },
+  {
+    name: "Diabetes Prevention & Management",
+    description:
+      "Comprehensive screening for diabetes risk factors, insulin resistance testing, nutritional counseling, and personalized management plan.",
+    price: 6500.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/diabetes_prevention_management_banner_esfp7z.jpg",
+  },
+  {
+    name: "Corporate Wellness Package",
+    description:
+      "Group health screening package for companies including basic health assessments, stress evaluations, and health education workshops.",
+    price: 2800.0,
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368419/corporate_wellness_package_banner_eg24lj.jpg",
+  },
+];
+
 const doctorData = [
   {
     firstname: "สมชาย",
     lastname: "พานิช",
     specialtyId: 1,
     hospitalId: 1,
-    experience: "10 ปี",
-    profileImg: "https://example.com/images/somchai_panich.jpg",
+    experience: "10 Years",
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-4_gel7vc.jpg",
   },
   {
     firstname: "ณัฐชา",
     lastname: "สมิธ",
     specialtyId: 2,
     hospitalId: 2,
-    experience: "8 ปี",
-    profileImg: "https://example.com/images/natcha_smith.jpg",
+    experience: "8 Years",
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/doctor-1_ptalux.jpg",
   },
   {
     firstname: "ไมเคิล",
     lastname: "พงษ์ประทีป",
     specialtyId: 3,
     hospitalId: 1,
-    experience: "12 ปี",
-    profileImg: "https://example.com/images/michael_pongprateep.jpg",
+    experience: "12 Years",
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-6_hzxohp.jpg",
   },
   {
     firstname: "เอมิลี",
     lastname: "ศิริวิทย์",
     specialtyId: 4,
     hospitalId: 3,
-    experience: "5 ปี",
-    profileImg: "https://example.com/images/emily_sirivith.jpg",
+    experience: "5 Years",
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-5_q5sqqk.jpg",
   },
   {
     firstname: "เดวิด",
     lastname: "วิลเลียมส์",
     specialtyId: 1,
     hospitalId: 2,
-    experience: "15 ปี",
-    profileImg: "https://example.com/images/david_williams.jpg",
+    experience: "15 Years",
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-4_gel7vc.jpg",
   },
   {
     firstname: "โซเฟีย",
     lastname: "มิลเลอร์",
     specialtyId: 2,
     hospitalId: 3,
-    experience: "7 ปี",
-    profileImg: "https://example.com/images/sophia_miller.jpg",
+    experience: "7 Years",
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-3_s9lqmy.jpg",
   },
   {
     firstname: "แดเนียล",
     lastname: "เทย์เลอร์",
     specialtyId: 3,
     hospitalId: 1,
-    experience: "10 ปี",
-    profileImg: "https://example.com/images/daniel_taylor.jpg",
+    experience: "10 Years",
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-6_hzxohp.jpg",
   },
   {
     firstname: "โอลิเวีย",
     lastname: "แอนเดอร์สัน",
     specialtyId: 4,
     hospitalId: 2,
-    experience: "9 ปี",
-    profileImg: "https://example.com/images/olivia_anderson.jpg",
+    experience: "9 Years",
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-2_ywmkvi.jpg",
   },
   {
     firstname: "เจมส์",
     lastname: "ธomas",
     specialtyId: 1,
     hospitalId: 3,
-    experience: "11 ปี",
-    profileImg: "https://example.com/images/james_thomas.jpg",
+    experience: "11 Years",
+    profileImg:
+      "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368418/doctor-4_gel7vc.jpg",
   },
-  {
-    firstname: "อิศรา",
-    lastname: "สมคิด",
-    specialtyId: 2,
-    hospitalId: 1,
-    experience: "6 ปี",
-    profileImg: "https://example.com/images/itsara_somkid.jpg",
-  },
-  {
-    firstname: "อรรถชัย",
-    lastname: "ชัยประทีป",
-    specialtyId: 3,
-    hospitalId: 2,
-    experience: "13 ปี",
-    profileImg: "https://example.com/images/attachai_chaiprateep.jpg",
-  },
-  {
-    firstname: "มิเชล",
-    lastname: "หิรัญพงษ์",
-    specialtyId: 4,
-    hospitalId: 5,
-    experience: "7 ปี",
-    profileImg: "https://example.com/images/michelle_hiranpong.jpg",
-  },
-  {
-    firstname: "ชนินทร์",
-    lastname: "ยิ้มมา",
-    specialtyId: 2,
-    hospitalId: 4,
-    experience: "14 ปี",
-    profileImg: "https://example.com/images/chanin_yimma.jpg",
-  },
-  {
-    firstname: "นิตยา",
-    lastname: "ประสาร",
-    specialtyId: 3,
-    hospitalId: 5,
-    experience: "9 ปี",
-    profileImg: "https://example.com/images/nitaya_prasan.jpg",
-  },
-  {
-    firstname: "รวิศ",
-    lastname: "ประทีป",
-    specialtyId: 1,
-    hospitalId: 4,
-    experience: "8 ปี",
-    profileImg: "https://example.com/images/ravis_prateep.jpg",
-  },
-  {
-    firstname: "ศิวกร",
-    lastname: "เลิศภาณุ",
-    specialtyId: 4,
-    hospitalId: 2,
-    experience: "6 ปี",
-    profileImg: "https://example.com/images/sivakorn_lertphan.jpg",
-  },
-  {
-    firstname: "ธีรเทพ",
-    lastname: "ราชวงศ์",
-    specialtyId: 2,
-    hospitalId: 1,
-    experience: "10 ปี",
-    profileImg: "https://example.com/images/teerathap_rachawong.jpg",
-  },
-  {
-    firstname: "อมรรัตน์",
-    lastname: "สมภาร",
-    specialtyId: 3,
-    hospitalId: 2,
-    experience: "13 ปี",
-    profileImg: "https://example.com/images/amornrat_sompharn.jpg",
-  },
-  {
-    firstname: "ชลธิชา",
-    lastname: "มานะ",
-    specialtyId: 1,
-    hospitalId: 3,
-    experience: "9 ปี",
-    profileImg: "https://example.com/images/chonthicha_mana.jpg",
-  },
-  {
-    firstname: "ดาริน",
-    lastname: "อรุณรุ่ง",
-    specialtyId: 4,
-    hospitalId: 4,
-    experience: "12 ปี",
-    profileImg: "https://example.com/images/darin_arunrung.jpg",
-  },
-  {
-    firstname: "อุดม",
-    lastname: "กุลยาม",
-    specialtyId: 2,
-    hospitalId: 3,
-    experience: "5 ปี",
-    profileImg: "https://example.com/images/udom_kulyam.jpg",
-  },
-  {
-    firstname: "ภูวดล",
-    lastname: "โสภา",
-    specialtyId: 3,
-    hospitalId: 2,
-    experience: "8 ปี",
-    profileImg: "https://example.com/images/phuwadol_sopha.jpg",
-  },
-  {
-    firstname: "ฐิติรัตน์",
-    lastname: "สมบูรณ์",
-    specialtyId: 1,
-    hospitalId: 5,
-    experience: "10 ปี",
-    profileImg: "https://example.com/images/thitirat_somboon.jpg",
-  },
-  {
-    firstname: "มุทิตา",
-    lastname: "โสภณ",
-    specialtyId: 4,
-    hospitalId: 1,
-    experience: "7 ปี",
-    profileImg: "https://example.com/images/mutita_sopon.jpg",
-  },
-  {
-    firstname: "พิมพ์ชนก",
-    lastname: "ทองดี",
-    specialtyId: 2,
-    hospitalId: 4,
-    experience: "12 ปี",
-    profileImg: "https://example.com/images/pimchanok_thongdee.jpg",
-  },
-  {
-    firstname: "ชนะชัย",
-    lastname: "ภูมิภัทร",
-    specialtyId: 1,
-    hospitalId: 3,
-    experience: "9 ปี",
-    profileImg: "https://example.com/images/chanachai_phumiphat.jpg",
-  },
-  {
-    firstname: "สิริกร",
-    lastname: "บูรณสิทธิ์",
-    specialtyId: 3,
-    hospitalId: 2,
-    experience: "8 ปี",
-    profileImg: "https://example.com/images/sirikan_buranasit.jpg",
-  },
-  {
-    firstname: "นวลทิพย์",
-    lastname: "แก้วมณี",
-    specialtyId: 4,
-    hospitalId: 5,
-    experience: "13 ปี",
-    profileImg: "https://example.com/images/nualthip_kaewmanee.jpg",
-  },
-  {
-    firstname: "วีรชัย",
-    lastname: "สุขสม",
-    specialtyId: 1,
-    hospitalId: 2,
-    experience: "11 ปี",
-    profileImg: "https://example.com/images/veerachai_suksom.jpg",
-  },
-  {
-    firstname: "ขวัญฤดี",
-    lastname: "บำรุง",
-    specialtyId: 2,
-    hospitalId: 3,
-    experience: "10 ปี",
-    profileImg: "https://example.com/images/kwanrdee_bamrung.jpg",
-  },
-  {
-    firstname: "ยิ่งยง",
-    lastname: "ดวงดี",
-    specialtyId: 3,
-    hospitalId: 1,
-    experience: "9 ปี",
-    profileImg: "https://example.com/images/yingyong_duangdee.jpg",
-  },
-  {
-    firstname: "มินตรา",
-    lastname: "วิชัย",
-    specialtyId: 4,
-    hospitalId: 5,
-    experience: "6 ปี",
-    profileImg: "https://example.com/images/mintra_wichai.jpg",
-  },
-  {
-    firstname: "ธัญญรัตน์",
-    lastname: "พึ่งบุญ",
-    specialtyId: 2,
-    hospitalId: 4,
-    experience: "12 ปี",
-    profileImg: "https://example.com/images/tanyarat_phungboon.jpg",
-  },
-  {
-    firstname: "พัชรินทร์",
-    lastname: "ชัยรัตน์",
-    specialtyId: 1,
-    hospitalId: 3,
-    experience: "7 ปี",
-    profileImg: "https://example.com/images/patcharin_chairat.jpg",
-  },
-  {
-    firstname: "ปรัชญา",
-    lastname: "ศรีธวัช",
-    specialtyId: 3,
-    hospitalId: 2,
-    experience: "9 ปี",
-    profileImg: "https://example.com/images/prachaya_sreethawut.jpg",
-  },
+  //   {
+  //     firstname: "อิศรา",
+  //     lastname: "สมคิด",
+  //     specialtyId: 2,
+  //     hospitalId: 1,
+  //     experience: "6 ปี",
+  //     profileImg: "https://example.com/images/itsara_somkid.jpg",
+  //   },
+  //   {
+  //     firstname: "อรรถชัย",
+  //     lastname: "ชัยประทีป",
+  //     specialtyId: 3,
+  //     hospitalId: 2,
+  //     experience: "13 ปี",
+  //     profileImg: "https://example.com/images/attachai_chaiprateep.jpg",
+  //   },
+  //   {
+  //     firstname: "มิเชล",
+  //     lastname: "หิรัญพงษ์",
+  //     specialtyId: 4,
+  //     hospitalId: 5,
+  //     experience: "7 ปี",
+  //     profileImg: "https://example.com/images/michelle_hiranpong.jpg",
+  //   },
+  //   {
+  //     firstname: "ชนินทร์",
+  //     lastname: "ยิ้มมา",
+  //     specialtyId: 2,
+  //     hospitalId: 4,
+  //     experience: "14 ปี",
+  //     profileImg: "https://example.com/images/chanin_yimma.jpg",
+  //   },
+  //   {
+  //     firstname: "นิตยา",
+  //     lastname: "ประสาร",
+  //     specialtyId: 3,
+  //     hospitalId: 5,
+  //     experience: "9 ปี",
+  //     profileImg: "https://example.com/images/nitaya_prasan.jpg",
+  //   },
+  //   {
+  //     firstname: "รวิศ",
+  //     lastname: "ประทีป",
+  //     specialtyId: 1,
+  //     hospitalId: 4,
+  //     experience: "8 ปี",
+  //     profileImg: "https://example.com/images/ravis_prateep.jpg",
+  //   },
+  //   {
+  //     firstname: "ศิวกร",
+  //     lastname: "เลิศภาณุ",
+  //     specialtyId: 4,
+  //     hospitalId: 2,
+  //     experience: "6 ปี",
+  //     profileImg: "https://example.com/images/sivakorn_lertphan.jpg",
+  //   },
+  //   {
+  //     firstname: "ธีรเทพ",
+  //     lastname: "ราชวงศ์",
+  //     specialtyId: 2,
+  //     hospitalId: 1,
+  //     experience: "10 ปี",
+  //     profileImg: "https://example.com/images/teerathap_rachawong.jpg",
+  //   },
+  //   {
+  //     firstname: "อมรรัตน์",
+  //     lastname: "สมภาร",
+  //     specialtyId: 3,
+  //     hospitalId: 2,
+  //     experience: "13 ปี",
+  //     profileImg: "https://example.com/images/amornrat_sompharn.jpg",
+  //   },
+  //   {
+  //     firstname: "ชลธิชา",
+  //     lastname: "มานะ",
+  //     specialtyId: 1,
+  //     hospitalId: 3,
+  //     experience: "9 ปี",
+  //     profileImg: "https://example.com/images/chonthicha_mana.jpg",
+  //   },
+  //   {
+  //     firstname: "ดาริน",
+  //     lastname: "อรุณรุ่ง",
+  //     specialtyId: 4,
+  //     hospitalId: 4,
+  //     experience: "12 ปี",
+  //     profileImg: "https://example.com/images/darin_arunrung.jpg",
+  //   },
+  //   {
+  //     firstname: "อุดม",
+  //     lastname: "กุลยาม",
+  //     specialtyId: 2,
+  //     hospitalId: 3,
+  //     experience: "5 ปี",
+  //     profileImg: "https://example.com/images/udom_kulyam.jpg",
+  //   },
+  //   {
+  //     firstname: "ภูวดล",
+  //     lastname: "โสภา",
+  //     specialtyId: 3,
+  //     hospitalId: 2,
+  //     experience: "8 ปี",
+  //     profileImg: "https://example.com/images/phuwadol_sopha.jpg",
+  //   },
+  //   {
+  //     firstname: "ฐิติรัตน์",
+  //     lastname: "สมบูรณ์",
+  //     specialtyId: 1,
+  //     hospitalId: 5,
+  //     experience: "10 ปี",
+  //     profileImg: "https://example.com/images/thitirat_somboon.jpg",
+  //   },
+  //   {
+  //     firstname: "มุทิตา",
+  //     lastname: "โสภณ",
+  //     specialtyId: 4,
+  //     hospitalId: 1,
+  //     experience: "7 ปี",
+  //     profileImg: "https://example.com/images/mutita_sopon.jpg",
+  //   },
+  //   {
+  //     firstname: "พิมพ์ชนก",
+  //     lastname: "ทองดี",
+  //     specialtyId: 2,
+  //     hospitalId: 4,
+  //     experience: "12 ปี",
+  //     profileImg: "https://example.com/images/pimchanok_thongdee.jpg",
+  //   },
+  //   {
+  //     firstname: "ชนะชัย",
+  //     lastname: "ภูมิภัทร",
+  //     specialtyId: 1,
+  //     hospitalId: 3,
+  //     experience: "9 ปี",
+  //     profileImg: "https://example.com/images/chanachai_phumiphat.jpg",
+  //   },
+  //   {
+  //     firstname: "สิริกร",
+  //     lastname: "บูรณสิทธิ์",
+  //     specialtyId: 3,
+  //     hospitalId: 2,
+  //     experience: "8 ปี",
+  //     profileImg: "https://example.com/images/sirikan_buranasit.jpg",
+  //   },
+  //   {
+  //     firstname: "นวลทิพย์",
+  //     lastname: "แก้วมณี",
+  //     specialtyId: 4,
+  //     hospitalId: 5,
+  //     experience: "13 ปี",
+  //     profileImg: "https://example.com/images/nualthip_kaewmanee.jpg",
+  //   },
+  //   {
+  //     firstname: "วีรชัย",
+  //     lastname: "สุขสม",
+  //     specialtyId: 1,
+  //     hospitalId: 2,
+  //     experience: "11 ปี",
+  //     profileImg: "https://example.com/images/veerachai_suksom.jpg",
+  //   },
+  //   {
+  //     firstname: "ขวัญฤดี",
+  //     lastname: "บำรุง",
+  //     specialtyId: 2,
+  //     hospitalId: 3,
+  //     experience: "10 ปี",
+  //     profileImg: "https://example.com/images/kwanrdee_bamrung.jpg",
+  //   },
+  //   {
+  //     firstname: "ยิ่งยง",
+  //     lastname: "ดวงดี",
+  //     specialtyId: 3,
+  //     hospitalId: 1,
+  //     experience: "9 ปี",
+  //     profileImg: "https://example.com/images/yingyong_duangdee.jpg",
+  //   },
+  //   {
+  //     firstname: "มินตรา",
+  //     lastname: "วิชัย",
+  //     specialtyId: 4,
+  //     hospitalId: 5,
+  //     experience: "6 ปี",
+  //     profileImg: "https://example.com/images/mintra_wichai.jpg",
+  //   },
+  //   {
+  //     firstname: "ธัญญรัตน์",
+  //     lastname: "พึ่งบุญ",
+  //     specialtyId: 2,
+  //     hospitalId: 4,
+  //     experience: "12 ปี",
+  //     profileImg: "https://example.com/images/tanyarat_phungboon.jpg",
+  //   },
+  //   {
+  //     firstname: "พัชรินทร์",
+  //     lastname: "ชัยรัตน์",
+  //     specialtyId: 1,
+  //     hospitalId: 3,
+  //     experience: "7 ปี",
+  //     profileImg: "https://example.com/images/patcharin_chairat.jpg",
+  //   },
+  //   {
+  //     firstname: "ปรัชญา",
+  //     lastname: "ศรีธวัช",
+  //     specialtyId: 3,
+  //     hospitalId: 2,
+  //     experience: "9 ปี",
+  //     profileImg: "https://example.com/images/prachaya_sreethawut.jpg",
+  //     experience: "6 Years",
+  //     profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742368420/doctor-1_ptalux.jpg",
+  //   },
 ];
 
 const specialtyData = [
@@ -7460,13 +7554,35 @@ const timeData = [
 ];
 console.log("DB seed...");
 
+// async function run() {
+//   await prisma.specialty.createMany({ data: specialtyData });
+// }
+
+// async function run() {
+//   await prisma.location.createMany({ data: locationData });
+// }
+// async function run() {
+//   await prisma.time.createMany({ data: timeData });
+// }
+
+// async function run() {
+//   await prisma.hospital.createMany({ data: hospitalData });
+// }
+
+// async function run() {
+//   await prisma.doctor.createMany({ data: doctorData });
+// }
+// async function run() {
+//   await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
+// }
 async function run() {
-  await prisma.time.createMany({ data: timeData });
-  await prisma.specialty.createMany({ data: specialtyData });
-  await prisma.location.createMany({ data: locationData });
-  await prisma.hospital.createMany({ data: hospitalData });
+  await prisma.program.createMany({ data: programData });
+  // await prisma.time.createMany({ data: timeData });
+  // await prisma.specialty.createMany({ data: specialtyData });
+  // await prisma.location.createMany({ data: locationData });
+  // await prisma.hospital.createMany({ data: hospitalData });
   await prisma.doctor.createMany({ data: doctorData });
-  await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
+  // await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
 }
 
 run();

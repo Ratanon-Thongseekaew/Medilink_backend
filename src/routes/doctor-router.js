@@ -1,26 +1,64 @@
 const express = require("express");
 const doctorRouter = express.Router();
-
+const doctorController = require("../controller/doctor-controller");
 //middleware
 const { authenticate } = require("../middlewares/authenticate");
-const {
-  getDoctordatasbySpecialty,
-  getDoctorDataById,
-  getAllDoctordatas,
-  getDoctordatasbyHospital,
-} = require("../controller/doctor-controller");
+// const {
+//   getDoctordatasbySpecialty,
+//   getDoctorDataById,
+//   getAllDoctordatas,
+//   getDoctordatasbyHospital,
+// } = require("../controller/doctor-controller");
+
+// //auth-route
+// doctorRouter.get("/get-all-doctor-datas", getAllDoctordatas);
+// doctorRouter.get(
+//   "/get-doctor-datas-by-specialty/:specialtyId",
+//   getDoctordatasbySpecialty
+// );
+// doctorRouter.get(
+//   "/get-doctor-datas-by-hospital/:hospitalId",
+//   getDoctordatasbyHospital
+// );
+// doctorRouter.get("/get-doctor-data-by-id/:doctorId", getDoctorDataById);
+const upload = require("../middlewares/upload");
 
 //auth-route
-doctorRouter.get("/get-all-doctor-datas", getAllDoctordatas);
 doctorRouter.get(
-  "/get-doctor-datas-by-specialty/:specialtyId",
-  getDoctordatasbySpecialty
+  "/alldoctors",
+  authenticate,
+  doctorController.adminGetAllDoctors
 );
 doctorRouter.get(
-  "/get-doctor-datas-by-hospital/:hospitalId",
-  getDoctordatasbyHospital
+  "/specialization",
+  authenticate,
+  doctorController.adminGetDoctorbySpecialty
 );
-doctorRouter.get("/get-doctor-data-by-id/:doctorId", getDoctorDataById);
+doctorRouter.get("/:id", authenticate, doctorController.adminGetDoctorById);
+doctorRouter.post(
+  "/create",
+  upload.single("profileImg"),
+  authenticate,
+  doctorController.adminCreateDoctor
+);
+doctorRouter.patch(
+  "/update/:id",
+  upload.single("profileImg"),
+  authenticate,
+  doctorController.adminUpdateDoctor
+);
+doctorRouter.delete("/:id", authenticate, doctorController.adminDeleteDoctor);
+doctorRouter.post(
+  "/specialization/create",
+  authenticate,
+  doctorController.adminCreateSpecialization
+);
+doctorRouter.get(
+  "/specialization/all",
+  authenticate,
+  doctorController.adminGetAllSpecialization
+);
+// doctorRouter.get("/get-doctor-data-by-id/:doctorId", );
 
 module.exports = doctorRouter;
 

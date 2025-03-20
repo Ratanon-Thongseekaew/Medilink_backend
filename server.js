@@ -11,6 +11,13 @@ const userRouter = require("./src/routes/user-router");
 const appointmentRouter = require("./src/routes/appointment-router");
 const scheduleRouter = require("./src/routes/schedule-router");
 const handleError = require("./src/middlewares/handleError");
+const aiRouter = require("./src/routes/ai-router");
+const orderRouter = require("./src/routes/order-router");
+
+
+
+
+
 
 const app = express();
 
@@ -26,8 +33,22 @@ app.use("/api/program", programRouter);
 app.use("/api/appointment", appointmentRouter);
 app.use("/api/schedule", scheduleRouter);
 app.use("/api/doctor", doctorRouter);
-app.use("/api/user", userRouter);
-// app.use('/api',userRouter)
+app.use("/api/user", userRouter); 
+app.use("/api/ai", aiRouter); 
+app.use("/api/order",orderRouter)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Handle errors
 app.use(handleError);
