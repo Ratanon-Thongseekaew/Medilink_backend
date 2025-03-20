@@ -7,6 +7,7 @@ exports.adminGetAllDoctors = async (req, res, next) => {
     const doctorDatas = await prisma.doctor.findMany({
       include: {
         specialty: true,
+        hospital: true,
       },
     });
 
@@ -19,15 +20,53 @@ exports.adminGetAllDoctors = async (req, res, next) => {
 //done
 exports.adminGetDoctorbySpecialty = async (req, res, next) => {
   try {
-    const { specialtyId } = req.body;
+    const { specialtyId } = req.params;
+
+    console.log("specialtyId :>> ", specialtyId);
 
     if (!specialtyId) {
       createError(400, "specialty id must be provided");
     }
 
+    if (isNaN(Number(specialtyId))) {
+      return createError(400, "Invalid specialty id");
+    }
+
     const doctordatasbySpecialty = await prisma.doctor.findMany({
       where: {
-        specialtyId,
+        specialtyId: Number(specialtyId),
+      },
+      include: {
+        specialty: true,
+        hospital: true,
+      },
+    });
+
+    res.json({ doctordatasbySpecialty });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports.getDoctordatasbyHospital = async (req, res, next) => {
+  try {
+    const { hospitalId } = req.params;
+
+    if (!hospitalId) {
+      createError(400, "hospital id must be provided");
+    }
+
+    if (isNaN(Number(hospitalId))) {
+      return createError(400, "Invalid hospital id");
+    }
+
+    const doctordatasbySpecialty = await prisma.doctor.findMany({
+      where: {
+        hospitalId: Number(hospitalId),
+      },
+      include: {
+        specialty: true,
+        hospital: true,
       },
     });
 
@@ -41,12 +80,21 @@ exports.adminGetDoctorById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
+    if (!doctorId) {
+      createError(400, "doctor id to be provided");
+    }
+
+    if (isNaN(Number(doctorId))) {
+      return createError(400, "Invalid doctor id");
+    }
+
     const doctorDataById = await prisma.doctor.findUnique({
       where: {
         id: Number(id),
       },
       include: {
         specialty: true,
+        hospital: true,
       },
     });
 

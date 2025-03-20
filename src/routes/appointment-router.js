@@ -8,6 +8,10 @@ const {
 const { authenticate } = require("../middlewares/authenticate");
 
 //auth-route
-appointmentRouter.post("/create", authenticate, userCreateAppointment);
+appointmentRouter.post(
+  "/create/:doctorId",
+  authenticate,
+  userCreateAppointment
+);
 
 module.exports = appointmentRouter;
