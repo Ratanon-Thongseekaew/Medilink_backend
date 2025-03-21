@@ -1,8 +1,19 @@
 const PDFDocument = require("pdfkit")
 const fs = require("fs")
+const image = "https://res.cloudinary.com/dpeegtiv8/image/upload/v1741939571/logo_te6v3y.png"
+
+const generateSchedulePDF = (packageDetails) => {
 
 
-const generateSchedulePDF = (appointmentDetails) => {
+    const orderDate = new Date(packageDetails?.orderDate);
+
+
+    const date = orderDate?.toISOString().split('T')[0]; // '2025-03-06'
+    const time = orderDate?.toISOString().split('T')[1].slice(0, 5); // '10:55'
+
+
+    console.log('packageDetailspdf', packageDetails)
+
 
     return new Promise((resolve, rejects) => {
 
@@ -14,19 +25,26 @@ const generateSchedulePDF = (appointmentDetails) => {
         doc.pipe(writeStream);
         doc.registerFont("THSarabunNew", "./src/service/fonts/THSarabunNew.ttf");
 
-
+        doc.image("./src/service/image/logo_te6v3y.png", {
+            fit: [100, 100], // ปรับขนาดโลโก้ตามต้องการ
+            align: "center", // จัดกึ่งกลาง
+          });
         doc.font("THSarabunNew")
 
-        doc.fontSize(22).text("กำหนดการนัดหมายแพทย์", { align: "center" });
+        doc.fontSize(22).text("กำหนดการนัดหมายเข้าใช้บริการ", { align: "center" });
         doc.moveDown(1.5);
 
 
+
+
+
+
         const data = [
-            { label: "ชื่อผู้ป่วย", value: appointmentDetails?.patientName || "ไม่ระบุ" },
-            { label: "วันที่", value: appointmentDetails?.date || "ไม่ระบุ" },
-            { label: "เวลา", value: appointmentDetails?.time || "ไม่ระบุ" },
-            { label: "สถานที่", value: appointmentDetails?.location || "ไม่ระบุ" },
-            { label: "แพทย์ที่รับผิดชอบ", value: appointmentDetails?.doctor || "ไม่ระบุ" },
+            { label: "ชื่อผู้เข้ารับบริการ", value: `${packageDetails?.user?.firstname}  ${packageDetails?.user?.lastname}`  || "ไม่ระบุ" },
+            { label: "วันที่", value: date || "ไม่ระบุ" },
+            { label: "เวลา", value: time || "ไม่ระบุ" },
+            { label: "สถานที่", value: "โรงพยาบาลกรุงเทพ" },
+            { label: "ชื่อแพ็คเกจ", value: packageDetails?.program?.name || "ไม่ระบุ" },
         ]
 
 
