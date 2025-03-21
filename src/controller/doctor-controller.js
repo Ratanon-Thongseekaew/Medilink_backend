@@ -80,11 +80,11 @@ exports.adminGetDoctorById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    if (!doctorId) {
+    if (!id) {
       createError(400, "doctor id to be provided");
     }
 
-    if (isNaN(Number(doctorId))) {
+    if (isNaN(Number(id))) {
       return createError(400, "Invalid doctor id");
     }
 
@@ -216,31 +216,31 @@ exports.adminCreateSpecialization = async (req, res, next) => {
       createError(400, "Specialization is already have in system");
     }
     const createSpecialization = await prisma.specialty.create({
-      data:{
-        specialtyName:specialtyName
-      }
-    })
+      data: {
+        specialtyName: specialtyName,
+      },
+    });
     res.status(201).json({
       message: "Specialization created successfully",
-      data: createSpecialization
+      data: createSpecialization,
     });
   } catch (error) {
     next(error);
   }
 };
 
-exports.adminGetAllSpecialization  = async  (req, res, next) =>{
-try {
-  const specializationData = await prisma.specialty.findMany({
-    select:{
-      specialtyName:true
-    },
-  })
-  res.status(201).json({
-    message: "Specialization get successfully",
-    data: specializationData
-  });
-} catch (error) {
-  next(error)
-}
-}
+exports.adminGetAllSpecialization = async (req, res, next) => {
+  try {
+    const specializationData = await prisma.specialty.findMany({
+      select: {
+        specialtyName: true,
+      },
+    });
+    res.status(201).json({
+      message: "Specialization get successfully",
+      data: specializationData,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

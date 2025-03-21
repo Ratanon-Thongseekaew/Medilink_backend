@@ -57,6 +57,8 @@ module.exports.getDoctorSchedulesByDoctorIdAndDay = async (req, res, next) => {
       by: ["day"],
     });
 
+    console.log("workDays :>> ", workDays);
+
     const interval = workDays.map((el) => {
       return el.day;
     });

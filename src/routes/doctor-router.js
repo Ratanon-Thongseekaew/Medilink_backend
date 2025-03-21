@@ -3,6 +3,7 @@ const doctorRouter = express.Router();
 const doctorController = require("../controller/doctor-controller");
 //middleware
 const { authenticate } = require("../middlewares/authenticate");
+const upload = require("../middlewares/upload");
 // const {
 //   getDoctordatasbySpecialty,
 //   getDoctorDataById,
@@ -21,7 +22,6 @@ const { authenticate } = require("../middlewares/authenticate");
 //   getDoctordatasbyHospital
 // );
 // doctorRouter.get("/get-doctor-data-by-id/:doctorId", getDoctorDataById);
-const upload = require("../middlewares/upload");
 
 //auth-route
 doctorRouter.get(
