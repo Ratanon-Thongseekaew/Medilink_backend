@@ -7,6 +7,7 @@ const cloudinary = require("../configs/cloudinary");
 const fs = require("fs");
 const path = require("path");
 const { connect } = require("http2");
+const sendEmail = require("../service/send-mail");
 
 //done
 exports.userGetAllPrograms = async (req, res, next) => {
@@ -241,10 +242,15 @@ exports.checkout = async(req,res,next)=>{
           select:{
             id:true,
             amount:true,
-            status:true,
-            method:true
+            status:true
           }
-        }
+        },
+        user:{
+          select:{
+            firstname:true,
+            lastname:true
+          }
+        },
       }
     })
     if(!order){
@@ -307,9 +313,11 @@ try {
      },
    });
 
-        //    const sendMail = await sendEmail.doctorAppointment()
+           const sendMail = await sendEmail.PurchasePackage(order)
 
-        // console.log(sendMail);
+        console.log(sendMail);
+        console.log(order);
+        
 
    res.json({ message: "Payment Complete", status: session.status ,order:order});
 } catch (error) {
