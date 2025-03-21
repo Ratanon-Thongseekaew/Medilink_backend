@@ -181,3 +181,38 @@ module.exports.userCreateAppointment = async (req, res, next) => {
     next(error);
   }
 };
+
+
+exports.userGetAppointmentbyId = async (req, res, next) => {
+  const  {id}  = req.params;
+try {
+  if (!id) {
+    return createError(400, "Appointment ID Must be provided");
+  }
+  if (isNaN(Number(id))) {
+    return createError(400, "Invalid ID");
+  }
+  const getAppointment = await prisma.appointment.findFirst({
+    where: {
+      id: Number(id),
+    },
+    select:{
+      id: true,
+      userId:true,
+      doctorId:true,
+      appointmentDate:true,
+      status:true,
+      createdAt:true
+    },
+  });
+  if (!getAppointment) {
+    return next(createError(404, "Appointment not found"));
+  }
+  res.status(201).json({
+    message: " get appointment successfully",
+    data: getAppointment,
+  });
+} catch (error) {
+ next(error) 
+}
+}
