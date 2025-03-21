@@ -361,13 +361,13 @@ console.log("DB seed...");
 //   await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
 // }
 async function run() {
-  await prisma.program.createMany({data:programData});
+  // await prisma.program.createMany({data:programData});
   // await prisma.time.createMany({ data: timeData });
   // await prisma.specialty.createMany({ data: specialtyData });
   // await prisma.location.createMany({ data: locationData });
-  // await prisma.hospital.createMany({ data: hospitalData });
+  await prisma.hospital.createMany({ data: hospitalData });
   await prisma.doctor.createMany({ data: doctorData });
-  // await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
+  await prisma.doctorSchedule.createMany({ data: doctorScheduleData });
 }
 
 run();
