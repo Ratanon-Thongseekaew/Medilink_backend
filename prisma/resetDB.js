@@ -6,7 +6,7 @@ async function run() {
   try {
     await prisma.$executeRawUnsafe("DROP DATABASE IF EXISTS `db-medilink`");
     await prisma.$executeRawUnsafe("CREATE DATABASE `db-medilink`");
-
+    // await prisma.doctor.deleteMany();
     execSync("npx prisma db push");
   } catch (err) {
     console.log(err);
