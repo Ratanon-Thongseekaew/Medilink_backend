@@ -2,46 +2,113 @@ const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
 const { date } = require("zod");
 
+const days = [
+  "SUNDAY",
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+];
+
 module.exports.userCreateAppointment = async (req, res, next) => {
   try {
+    const now = new Date();
+    const futureDate = new Date(now);
+    futureDate.setDate(futureDate.getDate() + 91);
+    console.log(futureDate);
+
     // console.log("hi createAppointment")
-    const userId = req.user.id
-    console.log("User from middleware:sadfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf", req.user);
+    const userId = req.user.id;
+    const doctorId = Number(req.params.doctorId);
+    console.log("User from middleware", req.user);
     // console.log("UserId extracted:", userId);
+    console.log("doctorId :>> ", doctorId);
+    console.log("req.params :>> ", req.params);
+
     const {
-      doctorId,
-      appointmentDate,
-      paymentId,
-      note,
+      selectedDate,
+      // paymentId,
+      // note,
       doctorScheduleId,
       doctorOvertimeId,
     } = req.body;
+
+    const appointmentDate = new Date(selectedDate);
+    const appointmentDay = days[appointmentDate.getDay()];
 
     function isValidId(id, errorMeassage) {
       if (!id || isNaN(id)) return createError(errorMeassage);
     }
     if (!req.user) {
-      return res.status(400).json({ message: 'User is missing or not authenticated.' });
+      return res
+        .status(400)
+        .json({ message: "User is missing or not authenticated." });
     }
 
-    // isValidId(doctor_id, "no doctor id");
-    // isValidId(payment_id, "no payment id");
-    // // isValidId(doctorScheduleId, "no schedule id");
-    // // isValidId(doctorOvertimeId, "no overtime id");
+    isValidId(doctorId, "no doctor id");
 
-    // const doctor = await prisma.doctor.findUnique({
-    //   where: {
-    //     id: Number(doctor_id),
-    //   },
-    // });
+    if (!doctorOvertimeId && !doctorScheduleId) {
+      createError(400, "schedule invalid");
+    }
 
-    // if (!doctor) {
-    //   createError(400, "doctor not found");
-    // }
+    if (doctorOvertimeId && doctorScheduleId) {
+      createError(400, "schedule must be one");
+    }
 
-    // if (appointment_date <= new Date()) {
-    //   createError(400, "date is past");
-    // }
+    if (doctorScheduleId) {
+      if (isNaN(doctorScheduleId)) {
+        createError(400, "invalid doctor overtime id");
+      }
+      const doctorSchedule = await prisma.doctorSchedule.findUnique({
+        where: {
+          id: doctorScheduleId,
+          day: appointmentDay,
+        },
+      });
+
+      if (!doctorSchedule) {
+        createError(400, "schedule not found");
+      }
+    }
+
+    if (doctorOvertimeId) {
+      if (isNaN(doctorOvertimeId)) {
+        createError(400, "invalid doctor overtime id");
+      }
+
+      const doctorOvertime = await prisma.doctorOvertime.findUnique({
+        where: {
+          id: doctorOvertimeId,
+          date: appointmentDate,
+        },
+      });
+
+      if (!doctorOvertime) {
+        createError(400, "overtime not found");
+      }
+    }
+
+    const doctor = await prisma.doctor.findUnique({
+      where: {
+        id: Number(doctorId),
+      },
+    });
+
+    if (!doctor) {
+      createError(400, "doctor not found");
+    }
+
+    if (
+      new Date(appointmentDate) <= now ||
+      new Date(appointmentDate) > futureDate
+    ) {
+      createError(
+        400,
+        "Appointments can be scheduled from tomorrow to 90 days ahead"
+      );
+    }
 
     // const payment = await prisma.payment.findUnique({
     //   where: {
@@ -53,75 +120,63 @@ module.exports.userCreateAppointment = async (req, res, next) => {
     //   createError(400, "payment not found");
     // }
 
-    // const doctorSchedule = await prisma.doctorSchedule.findUnique({
-    //   where: {
-    //     doctorScheduleId,
-    //   },
-    // });
-
-    // if (!doctorSchedule) {
-    //   createError(400, "schedule not found");
-    // }
-
-    // const doctorOvertime = await prisma.doctorOvertime.findUnique({
-    //   where: {
-    //     doctorOvertimeId,
-    //   },
-    // });
-
-    // if (!doctorOvertime) {
-    //   createError(400, "overtime not found");
-    // }
-
     // /**
     //  *   doctor Id , date > today
 
     // // doctorid idทั้งหมด isnan มีมั้ย , number มั้ย
     // //  *
 
-    const createAppointmentDate = {
-      doctorId,
-      paymentId,
-      note,
-      appointmentDate: new Date(appointmentDate),
-      userId,
+    const createAppointmentData = {
+      doctor: {
+        connect: { id: Number(doctorId) },
+      },
+      user: {
+        connect: { id: Number(userId) },
+      },
+      // paymentId,
+      // note,
+      appointmentDate,
     };
 
     if (doctorOvertimeId) {
-      createAppointmentDate.doctorOvertimeId = doctorOvertimeId;
+      createAppointmentData.DoctorOvertime = {
+        connect: { id: Number(doctorOvertimeId) },
+      };
     } else if (doctorScheduleId) {
-      createAppointmentDate.doctorScheduleId = doctorScheduleId;
+      createAppointmentData.DoctorSchedule = {
+        connect: { id: Number(doctorScheduleId) },
+      };
     }
-    console.log("check appointment data:",{
-      userId,
-      doctorId,
-      appointmentDate,
-      paymentId,
-      doctorScheduleId,
-      doctorOvertimeId
+
+    console.log("createAppointmentData :>> ", createAppointmentData);
+
+    const schedule = {};
+    if (doctorOvertimeId) {
+      schedule.doctorOvertimeId = Number(doctorOvertimeId);
+    } else if (doctorScheduleId) {
+      schedule.doctorScheduleId = Number(doctorScheduleId);
+    }
+
+    const appointed = await prisma.appointment.findFirst({
+      where: {
+        doctorId,
+        appointmentDate,
+        ...schedule,
+      },
     });
+
+    if (appointed) {
+      createError(400, "this timeslot is already appointed");
+    }
+
     const appointment = await prisma.appointment.create({
-      data: {
-        appointmentDate: new Date(appointmentDate),
-        note: note || "",
-        user: {
-          connect: { id: Number(userId) }
-        },
-        doctor: {
-          connect: { id: Number(doctorId) }
-        },
-        payment: {
-          connect: {id: Number(paymentId)}
-        },
-        DoctorSchedule:{
-          connect:  {id: Number(doctorScheduleId)}
-        }
-        // Handle optional connections separately to avoid undefined issues
-      }
+      data: createAppointmentData,
     });
-    
-    
-    res.json({ appointment: appointment, message: "create appointment successfully" });
+
+    res.json({
+      appointment: appointment,
+      message: "create appointment successfully",
+    });
   } catch (error) {
     next(error);
   }

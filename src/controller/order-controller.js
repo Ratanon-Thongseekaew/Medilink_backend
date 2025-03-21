@@ -1,12 +1,23 @@
 const prisma = require("../configs/prisma");
 const createError = require("../utils/createError");
 const stripe = require("stripe");
+
 //doing
 
 exports.userCreateOrder = async (req, res, next) => {
   const programId = parseInt(req.params.programId);
   const status = req.body.status;
   const userId = req.user.id;
+  const {date , time} = req.body
+
+  const dateTimeString = `${date}T${time}:00`;
+  const utcDate = new Date(dateTimeString);
+  const bangkokTime = new Date(utcDate.getTime() + 7 * 60 * 60 * 1000);
+
+
+
+
+
   try {
     const result = await prisma.$transaction(async (prisma) => {
       //1. find user
@@ -35,7 +46,7 @@ exports.userCreateOrder = async (req, res, next) => {
         data: {
           userId,
           programId,
-          orderDate: new Date(),
+          orderDate:bangkokTime,
           paymentId: payment.id,
           status: "PENDING",
         },
@@ -95,6 +106,7 @@ exports.userUpdateOrder = async (req, res, next) => {
             },
             program: true,
             payment: true
+            
         },
     });
     if (status === "SUCCESS") {
