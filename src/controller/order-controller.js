@@ -2,14 +2,13 @@ const prisma = require("../configs/prisma");
 const createError = require("../utils/createError");
 const stripe = require("stripe");
 
-//doing
+//create order for Program 
 
 exports.userCreateOrder = async (req, res, next) => {
   const programId = parseInt(req.params.programId);
   const status = req.body.status;
   const userId = req.user.id;
   const {date , time} = req.body
-
   const dateTimeString = `${date}T${time}:00`;
   const utcDate = new Date(dateTimeString);
   const bangkokTime = new Date(utcDate.getTime() + 7 * 60 * 60 * 1000);

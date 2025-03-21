@@ -4,9 +4,9 @@ const { execSync } = require("node:child_process");
 
 async function run() {
   try {
-    await prisma.$executeRawUnsafe("DROP DATABASE IF EXISTS `db-medilink`");
-    await prisma.$executeRawUnsafe("CREATE DATABASE `db-medilink`");
-
+    await prisma.$executeRawUnsafe("DROP DATABASE IF EXISTS `medilink_db`");
+    await prisma.$executeRawUnsafe("CREATE DATABASE `medilink_db`");
+    // await prisma.doctor.deleteMany();
     execSync("npx prisma db push");
   } catch (err) {
     console.log(err);

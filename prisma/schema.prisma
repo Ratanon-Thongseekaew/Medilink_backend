@@ -111,6 +111,7 @@ model Appointment {
   doctorScheduleId Int?
   DoctorOvertime   DoctorOvertime? @relation(fields: [doctorOvertimeId], references: [id], onDelete: SetNull)
   doctorOvertimeId Int?
+  Order            Order[]
 }
 
 model Program {
@@ -125,17 +126,19 @@ model Program {
 }
 
 model Order {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  program   Program  @relation(fields: [programId], references: [id])
-  programId Int
-  orderDate DateTime @default(now())
-  payment   Payment? @relation(fields: [paymentId], references: [id])
-  paymentId Int?
-  status    String
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-  updatedAt DateTime @updatedAt
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  program       Program     @relation(fields: [programId], references: [id])
+  programId     Int
+  orderDate     DateTime    @default(now())
+  payment       Payment?    @relation(fields: [paymentId], references: [id])
+  paymentId     Int?
+  appointmentId Int?
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  status        String
+  createdAt     DateTime    @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime    @updatedAt
 }
 
 model Payment {
