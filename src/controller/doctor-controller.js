@@ -233,6 +233,7 @@ exports.adminGetAllSpecialization = async (req, res, next) => {
   try {
     const specializationData = await prisma.specialty.findMany({
       select: {
+        id: true,
         specialtyName: true,
       },
     });
