@@ -3,9 +3,15 @@ const scheduleRouter = express.Router();
 
 //middleware
 const { authenticate } = require("../middlewares/authenticate");
-const { getDoctorScheduleByID } = require("../controller/schedule-controller");
+const {
+  getDoctorSchedulesByDoctorIdAndDay,
+  getDoctorOvertime,
+  getDoctorLeave,
+} = require("../controller/schedule-controller");
 
 //auth-route
-scheduleRouter.get("/get-doctor-schedule", authenticate, getDoctorScheduleByID);
+scheduleRouter.get("/get-doctor-schedule", getDoctorSchedulesByDoctorIdAndDay);
+scheduleRouter.get("/get-doctor-overtime", getDoctorOvertime);
+scheduleRouter.get("/get-doctor-leave", getDoctorLeave);
 
 module.exports = scheduleRouter;
