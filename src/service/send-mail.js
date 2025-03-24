@@ -1,4 +1,5 @@
 const transporter = require("../configs/mail");
+const generateScheduleDoctorPDF = require("./generate-pdf");
 const generateSchedulePDF = require("./generate-pdf");
 const image = "https://res.cloudinary.com/dpeegtiv8/image/upload/v1741939571/logo_te6v3y.png"
 const sendEmail = {};
@@ -7,7 +8,7 @@ sendEmail.doctorAppointment = async (recipientEmail, appointmentDetails) => {
 
   try {
 
-    const pdfPath = await generateSchedulePDF(appointmentDetails)
+    const pdfPath = await generateScheduleDoctorPDF(appointmentDetails)
 
 
     const info = await transporter.sendMail({
