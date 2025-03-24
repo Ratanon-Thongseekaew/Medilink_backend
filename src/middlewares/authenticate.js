@@ -7,7 +7,7 @@ exports.authenticate = (req, res, next) => {
     //รับ header ที่ส่งมาจาก client
     const authorization = req.headers.authorization;
     console.log(authorization)
-
+console.log('authorization', authorization)
     if (!authorization) {
       return res.status(401).json({ message: "Missing Token" });
     }
