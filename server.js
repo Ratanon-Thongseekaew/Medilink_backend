@@ -16,9 +16,6 @@ const orderRouter = require("./src/routes/order-router");
 
 
 
-
-
-
 const app = express();
 
 // Middlewares

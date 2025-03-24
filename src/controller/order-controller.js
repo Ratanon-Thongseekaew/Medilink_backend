@@ -14,9 +14,6 @@ exports.userCreateOrder = async (req, res, next) => {
   const bangkokTime = new Date(utcDate.getTime() + 7 * 60 * 60 * 1000);
 
 
-
-
-
   try {
     const result = await prisma.$transaction(async (prisma) => {
       //1. find user
@@ -30,6 +27,7 @@ exports.userCreateOrder = async (req, res, next) => {
       const program = await prisma.program.findUnique({
         where: { id: programId },
       });
+
       if (!program) {
         return createError(404, `Program with ID ${programId} not found`);
       }
@@ -72,6 +70,94 @@ exports.userCreateOrder = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.userCreateAppointmentOrder = async (req, res, next) => {
+  const appointmentId = parseInt(req.params.appointmentId);
+  const userId = req.user.id;
+  const { date, time } = req.body;
+
+  if (!date || !time) {
+    return next(createError(400, "Date and time are required"));
+  }
+
+  const startTime = time.split(" - ")[0]; // "09:00"
+
+  const dateTimeString = `${date}T${startTime}:00`;
+
+  const utcDate = new Date(dateTimeString);
+
+  if (isNaN(utcDate.getTime())) {
+    return next(createError(400, "Invalid date or time format"));
+  }
+
+  const bangkokTime = new Date(utcDate.getTime() + 7 * 60 * 60 * 1000);
+
+  const appointmentPrice = 100;
+
+  try {
+    const result = await prisma.$transaction(async (prisma) => {
+      //1. Find user
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+      if (!user) {
+        return createError(404, `User with ID ${userId} not found`);
+      }
+
+      //2. Find appointment
+      const appointment = await prisma.appointment.findUnique({
+        where: { id: appointmentId },
+      });
+
+      if (!appointment) {
+        return createError(404, `Appointment with ID ${appointmentId} not found`);
+      }
+
+      //3. Create payment
+      const payment = await prisma.payment.create({
+        data: {
+          amount: appointmentPrice,
+          method: "CREDIT_CARD",
+          status: "PENDING",
+          paymentDate: new Date(),
+        },
+      });
+
+      //4. Create order
+      const order = await prisma.order.create({
+        data: {
+          userId,
+          appointmentId,
+          orderDate: bangkokTime,
+          paymentId: payment.id,
+          status: "PENDING",
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              firstname: true,
+              lastname: true,
+            },
+          },
+          appointment: true,
+          payment: true,
+        },
+      });
+
+      return order;
+    });
+
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 exports.userUpdateOrder = async (req, res, next) => {
   const orderId = parseInt(req.body.orderId); 
@@ -130,7 +216,6 @@ exports.userUpdateOrder = async (req, res, next) => {
   }
 };
 
-
 exports.adminGetAllOrder = async (req, res, next) =>{
     try {
     const getOrder = await prisma.order.findMany({
@@ -155,7 +240,6 @@ exports.adminGetAllOrder = async (req, res, next) =>{
 }
 
 }
-
 
 exports.userGetOrderById = async (req, res, next) =>{
 try {

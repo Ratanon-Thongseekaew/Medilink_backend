@@ -5,6 +5,8 @@ const appointmentRouter = express.Router();
 const {
   userCreateAppointment,
   userGetAppointmentbyId,
+  appointmentCheckout,
+  appointmentCheckoutStatus,
 } = require("../controller/appointment-controller");
 const { authenticate } = require("../middlewares/authenticate");
 
@@ -16,6 +18,9 @@ appointmentRouter.post(
 );
 
 appointmentRouter.get("/:id",authenticate,userGetAppointmentbyId)
+
+appointmentRouter.post("/checkout", authenticate, appointmentCheckout);
+appointmentRouter.get("/checkout-status/:session_id",authenticate, appointmentCheckoutStatus)
 
 
 
