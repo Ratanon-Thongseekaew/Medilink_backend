@@ -96,7 +96,8 @@ exports.adminCreateProgram = async (req, res, next) => {
       data: {
         name: name,
         description: description,
-        price: price,
+        //insert parsefloat
+        price:  parseFloat(price),
         profileImg: imageUrl,
       },
     });
@@ -152,7 +153,8 @@ exports.adminUpdateProgram = async (req, res, next) => {
     const updateData = {
         name: name,
         description: description,
-        price: price,
+        //insert parsefloat
+        price:  parseFloat(price),
       };
       
       if (profileImgPath) {
