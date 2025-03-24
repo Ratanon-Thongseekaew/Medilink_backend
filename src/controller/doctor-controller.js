@@ -1,5 +1,8 @@
 const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
+const cloudinary = require('../configs/cloudinary')
+const path = require('path')
+const fs =  require("fs/promises")
 
 //done
 exports.adminGetAllDoctors = async (req, res, next) => {
@@ -129,6 +132,21 @@ exports.adminCreateDoctor = async (req, res, next) => {
         .json({ message: "Doctor is already have in system" });
     }
     const profileImg = req.file ? req.file.path : null;
+     //insert function for upload image
+    const haveFile = !!req.file
+    let uploadResult = {}
+
+    if (haveFile) {
+
+        uploadResult = await cloudinary.uploader.upload(req.file.path, {
+
+
+            overwrite: true,
+            public_id: path.parse(req.file.path).name
+        })
+        fs.unlink(req.file.path)
+    }
+    console.log('profileImg', profileImg)
     const createDoctor = await prisma.doctor.create({
       data: {
         firstname: firstname,
@@ -136,7 +154,7 @@ exports.adminCreateDoctor = async (req, res, next) => {
         experience: experience,
         specialtyId: parsedSpecialtyId,
         hospitalId: parsedHospitalId,
-        profileImg: profileImg,
+        profileImg: uploadResult.secure_url || '',
       },
     });
 
@@ -164,16 +182,31 @@ exports.adminUpdateDoctor = async (req, res, next) => {
       });
     }
     const profileImg = req.file ? req.file.path : undefined;
+    //insert function for upload image
+    const haveFile = !!req.file
+    let uploadResult = {}
+
+    if (haveFile) {
+
+        uploadResult = await cloudinary.uploader.upload(req.file.path, {
+
+
+            overwrite: true,
+            public_id: path.parse(req.file.path).name
+        })
+        fs.unlink(req.file.path)
+    }
     const updateData = {
       firstname,
       lastname,
       experience,
       specialtyId: specialtyId ? Number(specialtyId) : undefined,
       hospitalId: hospitalId ? Number(hospitalId) : undefined,
+      profileImg: uploadResult.secure_url || '',
     };
-    if (profileImg) {
-      updateData.profileImg = profileImg;
-    }
+    // if (profileImg) {
+    //   updateData.profileImg = profileImg;
+    // }
     const updateDoctor = await prisma.doctor.update({
       where: { id: Number(id) },
       data: updateData,
