@@ -1,7 +1,6 @@
 const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
-const stripe = require('stripe')('sk_test_51R1NHoFWX5EVFtiEHYBEELtt12uJWtvNV6yaAa7Rrsf3uLbc2zPyaHxVk6RRTGrkjRfwiMeCywr7VzPryceTePOn00poZPFA80');
-// const stripe = require('stripe')(process.env.STRIPE_API_KEY);
+const stripe = require('stripe')(process.env.STRIPE_API_KEY);
 
 const cloudinary = require("../configs/cloudinary");
 const fs = require("fs");
@@ -223,107 +222,134 @@ try {
 }
 }
 
-exports.checkout = async(req,res,next)=>{
+exports.checkout = async (req, res, next) => {
   try {
-    const {id} = req.body
-    //step 1 find program
-    const order = await prisma.order.findFirst({
-      where:{
-        id:Number(id)
-      },
-      include:{
-        program:{
-          select:{
-            id:true,
-            name:true,
-            price:true,
-            profileImg:true
-          }
-        },
-        payment:{
-          select:{
-            id:true,
-            amount:true,
-            status:true
-          }
-        },
-        user:{
-          select:{
-            firstname:true,
-            lastname:true
-          }
-        },
-      }
-    })
-    if(!order){
-      return createError(404, "Order is not found")
-    }
-    console.log('order', order)
-    const {userId,paymentId, programId,program,payment,} = order
+    const { id } = req.body;
 
-    //step2: Stripe
+    // Step 1: Find order
+    const order = await prisma.order.findFirst({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        program: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            profileImg: true,
+          },
+        },
+        payment: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+          },
+        },
+        user: {
+          select: {
+            firstname: true,
+            lastname: true,
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      return next(createError(404, "Order is not found"));
+    }
+    console.log('✅ order:', order);
+
+    const { payment, program } = order;
+
+    // Step 2: Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       ui_mode: 'embedded',
-      metadata:{order : JSON.stringify(order)},
+      metadata: {
+        orderId: order.id.toString(),
+        userId: order.userId.toString(),
+        paymentId: order.paymentId.toString(),
+        programId: order.programId.toString(),
+      },
       line_items: [
         {
-          // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
           quantity: 1,
-          price_data:{
+          price_data: {
             currency: 'thb',
-            product_data:{
-               name:program.name,
-               images:[paymentId],
-               description: 'Thank You for Purchase!'
+            product_data: {
+              name: program.name,
+              images: [program.profileImg], // ใช้รูปภาพของโปรแกรมแทน
+              description: 'Thank You for Purchase!',
             },
-            unit_amount: payment.amount*100
-          }
+            unit_amount: payment.amount * 100,
+          },
         },
       ],
       mode: 'payment',
       return_url: `http://localhost:5173/checkout-complete/{CHECKOUT_SESSION_ID}`,
     });
-  
-    res.send({clientSecret: session.client_secret});
+
+    res.send({ clientSecret: session.client_secret });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
-exports.checkoutStatus = async (req,res,next)=>{
-try {
-   // code
-   const { session_id } = req.params;
-   const session = await stripe.checkout.sessions.retrieve(session_id);
-   console.log('session.metadata', session.metadata)
-   const order = JSON.parse(session?.metadata.order)
-   console.log('orderhggujguyhujiuyuyuyhuyh', order)
-   const orderId = order?.id
-   console.log('order?.id', order?.id)
-   console.log('session.status', session.status)
-   // Check
-   if (session.status !== "complete" || !orderId) {
-     return createError(400, "Something Wrong!!!!");
-   }
-   // Update DB paymentStatus => true
-   const result = await prisma.order.update({
-     where: {
-       id: Number(orderId),
-     },
-     data: {
-       status: "SUCCESS",
-     },
-   });
+exports.checkoutStatus = async (req, res, next) => {
+  try {
+    const { session_id } = req.params;
 
-           const sendMail = await sendEmail.PurchasePackage(order)
+    // Step 1: Retrieve session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    console.log('✅ Stripe Session:', session.metadata);
 
-        console.log(sendMail);
-        console.log(order);
-        
+    const orderId = session.metadata.orderId;
+    if (!orderId) {
+      return next(createError(400, "Order ID is missing in metadata"));
+    }
 
-   res.json({ message: "Payment Complete", status: session.status ,order:order});
-} catch (error) {
-  next(error)
-}
+    // Step 2: Retrieve order again from DB
+    const order = await prisma.order.findFirst({
+      where: { id: Number(orderId) },
+      include: {
+        program: true,
+        payment: true,
+        user: true,
+      },
+    });
 
-}
+    if (!order) {
+      return next(createError(404, "Order not found"));
+    }
+
+    console.log('✅ Order Retrieved:', order);
+
+    // Step 3: Check session status
+    if (session.status !== "complete") {
+      return next(createError(400, "Payment not complete yet"));
+    }
+
+    // Step 4: Update order status
+    await prisma.order.update({
+      where: {
+        id: Number(orderId),
+      },
+      data: {
+        status: "SUCCESS",
+      },
+    });
+
+    // Step 5: Send confirmation email
+    const sendMail = await sendEmail.PurchasePackage(order);
+    console.log('📧 Email sent:', sendMail);
+
+    res.json({
+      message: "Payment Complete",
+      status: session.status,
+      order: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -124,7 +124,7 @@ sendEmail.PurchasePackage = async (packageDetails, recipientEmail) => {
     const info = await transporter.sendMail({
 
       from: process.env.GMAIL,
-      to: "thongnit2201@gmail.com",
+      to: process.env.SENDTOEMAIL,
       subject: "Medilink ขอบพระคุณที่ไว้วางใจใช้บริการของเรา",
       html: `
       <div style="max-width: 600px; margin: auto; padding: 20px; border-radius: 10px; 

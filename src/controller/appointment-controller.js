@@ -1,6 +1,8 @@
 const createError = require("../utils/createError");
 const prisma = require("../configs/prisma");
 const { date } = require("zod");
+const stripe = require('stripe')(process.env.STRIPE_API_KEY);
+const sendEmail = require("../service/send-mail");
 
 const days = [
   "SUNDAY",
@@ -216,3 +218,131 @@ try {
  next(error) 
 }
 }
+
+exports.appointmentCheckout = async (req, res, next) => {
+  try {
+    const { id } = req.body;
+
+    // Step 1: Find order
+    const order = await prisma.order.findFirst({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        payment: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+          },
+        },
+        user: {
+          select: {
+            firstname: true,
+            lastname: true,
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      return next(createError(404, "Order is not found"));
+    }
+    console.log('✅ order:', order);
+
+    const { payment } = order;
+
+    // Step 2: Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: 'embedded',
+      metadata: {
+        orderId: order.id.toString(),
+        userId: order.userId.toString(),
+        paymentId: order.paymentId.toString(),
+        appointmentId: order.appointmentId.toString(),
+      },
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'thb',
+            product_data: {
+              name: `Appointment Payment for ${order.user.firstname} ${order.user.lastname}`,
+              description: 'Thank You for Purchase!',
+            },
+            unit_amount: payment.amount * 100,
+          },
+        },
+      ],
+      mode: 'payment',
+      return_url: `http://localhost:5173/appointment-checkout-complete/{CHECKOUT_SESSION_ID}`,
+    });
+
+    res.send({ clientSecret: session.client_secret });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.appointmentCheckoutStatus = async (req, res, next) => {
+  try {
+    const { session_id } = req.params;
+
+    // Step 1: Retrieve session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    console.log('✅ Stripe Session:', session.metadata);
+
+    const orderId = session.metadata.orderId;
+    if (!orderId) {
+      return next(createError(400, "Order ID is missing in metadata"));
+    }
+
+    // Step 2: Retrieve order again from DB
+    const order = await prisma.order.findFirst({
+      where: { id: Number(orderId) },
+      include: {
+        appointment: true,
+        payment: true,
+        user: true,
+      },
+    });
+
+    if (!order) {
+      return next(createError(404, "Order not found"));
+    }
+
+    console.log('✅ Order Retrieved:', order);
+
+    // Step 3: Check session status
+    if (session.status !== "complete") {
+      return next(createError(400, "Payment not complete yet"));
+    }
+
+    // Step 4: Update order status
+    await prisma.order.update({
+      where: {
+        id: Number(orderId),
+      },
+      data: {
+        status: "SUCCESS",
+        appointment: {
+          update: {
+            status: "SUCCESS",
+          }
+        }
+      },
+    });
+
+    // Step 5: Send confirmation email
+    const sendMail = await sendEmail.PurchasePackage(order);
+    console.log('📧 Email sent:', sendMail);
+
+    res.json({
+      message: "Payment Complete",
+      status: session.status,
+      order: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
