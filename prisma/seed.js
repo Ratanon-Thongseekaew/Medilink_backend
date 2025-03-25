@@ -399,7 +399,7 @@ const hospitalData = [
     name: "โรงพยาบาลกรุงเทพ",
     contactInfo: "02-123-4567",
     locationId: 1,
-    profileImg: "https://example.com/images/bangkok_hospital.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742279774/%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B9%80%E0%B8%97%E0%B8%9E_j12bgo.png",
   },
   {
     name: "โรงพยาบาลสมิติเวช สุขุมวิท",
@@ -411,7 +411,7 @@ const hospitalData = [
     name: "โรงพยาบาลจุฬาลงกรณ์",
     contactInfo: "02-256-4000",
     locationId: 3,
-    profileImg: "https://example.com/images/chulalongkorn_hospital.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742279856/%E0%B8%88%E0%B8%B8%E0%B8%AC%E0%B8%B2_pcs86k.png",
   },
   {
     name: "โรงพยาบาลรามคำแหง",
@@ -423,7 +423,7 @@ const hospitalData = [
     name: "โรงพยาบาลบำรุงราษฎร์",
     contactInfo: "02-066-8888",
     locationId: 5,
-    profileImg: "https://example.com/images/bumrungrad_hospital.jpg",
+    profileImg: "https://res.cloudinary.com/dhzksppsh/image/upload/v1742279857/%E0%B8%9A%E0%B8%B3%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B8%A3%E0%B8%B2%E0%B8%8E%E0%B8%A9%E0%B9%8C_fmac7c.png",
   },
 ];
 

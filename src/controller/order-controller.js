@@ -244,6 +244,8 @@ exports.adminGetAllOrder = async (req, res, next) =>{
 exports.userGetOrderById = async (req, res, next) =>{
 try {
     const id = req.params.orderId
+    console.log("Received request for orderId:",id);
+
     if (!id) {
         return createError(400, "ORDER ID Must be provided");
       }
@@ -261,14 +263,19 @@ try {
             program:{
                 select:{
                     name:true,
-                    price:true
+                    price:true,
+                    profileImg:true
                 }
             }
           }
       })
+      if (!getOrder) {
+        return next(createError(404, `Order with ID ${id} not found`));
+      }
       res.status(200).json({
         success: true,
         data: getOrder
+        
     });
 } catch (error) {
     next(error)
