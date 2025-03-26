@@ -10,6 +10,8 @@ const sendEmail = require("../service/send-mail");
 
 //done
 exports.userGetAllPrograms = async (req, res, next) => {
+
+    
   try {
     const { page = "1", limit = "25" } = req.query;
     if (isNaN(Number(page)) || isNaN(Number(limit))) {
@@ -347,7 +349,7 @@ exports.checkoutStatus = async (req, res, next) => {
     res.json({
       message: "Payment Complete",
       status: session.status,
-      order: order,
+      order: order.id,
     });
   } catch (error) {
     next(error);

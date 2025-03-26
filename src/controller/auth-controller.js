@@ -54,13 +54,13 @@ exports.login = async (req, res, next) => {
             }
         })
         if (!users) {
-            createError(400, "Email or Password invalid")
+            createError(400, "Email or Password Is Invalid")
         }
 
         const passwordMatch = bcrypt.compareSync(password, users.password)
 
         if (!passwordMatch) {
-            createError(400, "Email or Password invalid")
+            createError(400, "Email or Password Is Invalid")
         }
         //3. Grnerate Token
         const payload = {
